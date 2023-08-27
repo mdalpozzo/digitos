@@ -36,6 +36,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class NumberOption {
+  const NumberOption(
+      {required this.id, required this.value, required this.selected});
+
+  final String id;
+  final int value;
+  final bool selected;
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -55,17 +64,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  List<NumberOption> options = [
+    const NumberOption(id: '1', value: 1, selected: false),
+    const NumberOption(id: '2', value: 2, selected: false),
+    const NumberOption(id: '3', value: 3, selected: false),
+    const NumberOption(id: '4', value: 4, selected: false),
+    const NumberOption(id: '5', value: 5, selected: false),
+    const NumberOption(id: '6', value: 6, selected: false)
+  ];
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  _selectNumber({required String id, required int number}) {
+    void innerSelect(bool? selected) {
+      setState(() {
+        options = options.map((option) {
+          if (option.id == id) {
+            return NumberOption(
+              id: option.id,
+              value: option.value,
+              selected: selected == true,
+            );
+          } else {
+            return option;
+          }
+        }).toList();
+      });
+    }
+
+    return innerSelect;
   }
 
   @override
@@ -106,20 +131,29 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'Select numbers...',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            for (var numberOption in options)
+              // Checkbox(
+              //   value: numberOption.selected,
+              // onChanged: _selectNumber(
+              //   id: numberOption.id,
+              //   number: numberOption.value,
+              // ),
+              // )
+              CheckboxListTile(
+                title: Text(numberOption.value.toString()),
+                value: numberOption.selected,
+                onChanged: _selectNumber(
+                  id: numberOption.id,
+                  number: numberOption.value,
+                ),
+                // controlAffinity:
+                //     ListTileControlAffinity.leading, //  <-- leading Checkbox
+              )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
