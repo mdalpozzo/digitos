@@ -1,0 +1,13 @@
+Please create a javascript script that will accomplish the below:
+
+1. Generate 6 integers, all 2 digits or less.
+
+2. Use the basic arithmetic operations (addition, subtraction, multiplication, or division) to combine any two integers from the current set to produce a new integer.
+
+3. The operation must yield a new integer. That means, if you use division, the result must be an integer (i.e., no decimal results are allowed).
+
+4. After an operation, replace the two used integers with the resulting integer. The first set will be 6 integers, the second set will be 5, the third will be 4, etc...)
+
+5. Try to reach a target integer in as few operations as possible.
+
+6. Return a target integer that can be arrived at using the generated integers.
