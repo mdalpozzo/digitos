@@ -1,3 +1,4 @@
+import 'package:digitos/views/GameView.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -36,15 +37,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class NumberOption {
-  const NumberOption(
-      {required this.id, required this.value, required this.selected});
-
-  final String id;
-  final int value;
-  final bool selected;
-}
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -64,35 +56,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<NumberOption> options = [
-    const NumberOption(id: '1', value: 1, selected: false),
-    const NumberOption(id: '2', value: 2, selected: false),
-    const NumberOption(id: '3', value: 3, selected: false),
-    const NumberOption(id: '4', value: 4, selected: false),
-    const NumberOption(id: '5', value: 5, selected: false),
-    const NumberOption(id: '6', value: 6, selected: false)
-  ];
-
-  _selectNumber({required String id, required int number}) {
-    void innerSelect(bool? selected) {
-      setState(() {
-        options = options.map((option) {
-          if (option.id == id) {
-            return NumberOption(
-              id: option.id,
-              value: option.value,
-              selected: selected == true,
-            );
-          } else {
-            return option;
-          }
-        }).toList();
-      });
-    }
-
-    return innerSelect;
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -111,52 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 120),
-          child: Column(
-            // Column is also a layout widget. It takes a list of children and
-            // arranges them vertically. By default, it sizes itself to fit its
-            // children horizontally, and tries to be as tall as its parent.
-            //
-            // Column has various properties to control how it sizes itself and
-            // how it positions its children. Here we use mainAxisAlignment to
-            // center the children vertically; the main axis here is the vertical
-            // axis because Columns are vertical (the cross axis would be
-            // horizontal).
-            //
-            // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-            // action in the IDE, or press "p" in the console), to see the
-            // wireframe for each widget.
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'Select numbers...',
-              ),
-              for (var numberOption in options)
-                // Checkbox(
-                //   value: numberOption.selected,
-                // onChanged: _selectNumber(
-                //   id: numberOption.id,
-                //   number: numberOption.value,
-                // ),
-                // )
-                CheckboxListTile(
-                  title: Text(numberOption.value.toString()),
-                  value: numberOption.selected,
-                  onChanged: _selectNumber(
-                    id: numberOption.id,
-                    number: numberOption.value,
-                  ),
-                  // controlAffinity:
-                  //     ListTileControlAffinity.leading, //  <-- leading Checkbox
-                )
-            ],
-          ),
-        ),
-      ),
+      body: const GameView(),
     );
   }
 }
