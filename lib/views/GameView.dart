@@ -5,6 +5,15 @@ import 'package:flutter/material.dart';
 // TODO replace with remote data
 int targetNumber = 10;
 
+List<NumberOption> initialOptions = [
+  const NumberOption(id: '1', value: 1, selected: false),
+  const NumberOption(id: '2', value: 2, selected: false),
+  const NumberOption(id: '3', value: 3, selected: false),
+  const NumberOption(id: '4', value: 4, selected: false),
+  const NumberOption(id: '5', value: 5, selected: false),
+  const NumberOption(id: '6', value: 6, selected: false)
+];
+
 class NumberOption {
   const NumberOption({
     required this.id,
@@ -25,14 +34,7 @@ class GameView extends StatefulWidget {
 }
 
 class _GameViewState extends State<GameView> {
-  List<NumberOption> options = [
-    const NumberOption(id: '1', value: 1, selected: false),
-    const NumberOption(id: '2', value: 2, selected: false),
-    const NumberOption(id: '3', value: 3, selected: false),
-    const NumberOption(id: '4', value: 4, selected: false),
-    const NumberOption(id: '5', value: 5, selected: false),
-    const NumberOption(id: '6', value: 6, selected: false)
-  ];
+  List<NumberOption> options = initialOptions;
 
   NumberOption? firstNumber;
   OperationEnums? selectedOperation;
