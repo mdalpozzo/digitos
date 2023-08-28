@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "540649544846",
+    "project_id": "digitos-2ba0b",
+    "storage_bucket": "digitos-2ba0b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540649544846:android:3741289cb5b1474518bddf",
+        "android_client_info": {
+          "package_name": "com.example.digitos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540649544846-ndgq0jin8hj904paf1jb9bbkjeeeob28.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANH9miWbWOW368glX4cKkWp_j5ZLWn_6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540649544846-ndgq0jin8hj904paf1jb9bbkjeeeob28.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "540649544846-6hot7905stlqlj4ahmb8ujpqcg58redg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.digitos.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

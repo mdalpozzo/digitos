@@ -86,12 +86,14 @@ class _GameViewState extends State<GameView> {
       _showSuccessModal(context);
     }
 
-    bool isInt = result is int;
+    bool isInt = result is int || result.remainder(1.0) == 0.0;
 
     if (!isInt) {
       // TODO handle error - result is not an int
       return null;
     } else {
+      int resultAsInt = result.toInt();
+
       setState(() {
         List<NumberOption> newOptions = [];
 
@@ -113,7 +115,7 @@ class _GameViewState extends State<GameView> {
           0,
           NumberOption(
             id: idIncrementer.toString(),
-            value: result,
+            value: resultAsInt,
           ),
         );
 
