@@ -6,24 +6,22 @@ import 'package:flutter/material.dart';
 int targetNumber = 10;
 
 List<NumberOption> initialOptions = [
-  const NumberOption(id: '1', value: 1, selected: false),
-  const NumberOption(id: '2', value: 2, selected: false),
-  const NumberOption(id: '3', value: 3, selected: false),
-  const NumberOption(id: '4', value: 4, selected: false),
-  const NumberOption(id: '5', value: 5, selected: false),
-  const NumberOption(id: '6', value: 6, selected: false)
+  const NumberOption(id: '1', value: 1),
+  const NumberOption(id: '2', value: 2),
+  const NumberOption(id: '3', value: 3),
+  const NumberOption(id: '4', value: 4),
+  const NumberOption(id: '5', value: 5),
+  const NumberOption(id: '6', value: 6)
 ];
 
 class NumberOption {
   const NumberOption({
     required this.id,
     required this.value,
-    required this.selected, // TODO i think this selected prop is obsolete now
   });
 
   final String id;
   final int value;
-  final bool selected;
 }
 
 class GameView extends StatefulWidget {
@@ -107,7 +105,6 @@ class _GameViewState extends State<GameView> {
           newOptions.add(NumberOption(
             id: idIncrementer.toString(),
             value: option.value,
-            selected: option.selected,
           ));
           idIncrementer++;
         }
@@ -117,7 +114,6 @@ class _GameViewState extends State<GameView> {
           NumberOption(
             id: idIncrementer.toString(),
             value: result,
-            selected: false,
           ),
         );
 
@@ -144,13 +140,14 @@ class _GameViewState extends State<GameView> {
 
   void _resetGame() {
     setState(() {
+      // TODO fetch new options
       options = [
-        const NumberOption(id: '1', value: 1, selected: false),
-        const NumberOption(id: '2', value: 2, selected: false),
-        const NumberOption(id: '3', value: 3, selected: false),
-        const NumberOption(id: '4', value: 4, selected: false),
-        const NumberOption(id: '5', value: 5, selected: false),
-        const NumberOption(id: '6', value: 6, selected: false)
+        const NumberOption(id: '1', value: 1),
+        const NumberOption(id: '2', value: 2),
+        const NumberOption(id: '3', value: 3),
+        const NumberOption(id: '4', value: 4),
+        const NumberOption(id: '5', value: 5),
+        const NumberOption(id: '6', value: 6)
       ];
       firstNumber = null;
       selectedOperation = null;
@@ -181,29 +178,39 @@ class _GameViewState extends State<GameView> {
           const Text(
             'Play the game...',
           ),
-          for (var numberOption in options)
-            SizedBox(
-              width: 120,
-              child: CheckboxListTile(
-                title: Text(numberOption.value.toString()),
-                value: numberOption.id == firstNumber?.id,
-                onChanged: firstNumber != null &&
-                        selectedOperation == null &&
-                        numberOption.id != firstNumber?.id
-                    ? null
-                    : _selectNumber(numberOption: numberOption),
-                // controlAffinity:
-                //     ListTileControlAffinity.leading, //  <-- leading Checkbox
-              ),
-            ),
-          Row(
-            children: OperationEnums.values.map((operation) {
-              return ElevatedButton(
-                onPressed: firstNumber == null
-                    ? null
-                    : _selectOperation(operation: operation),
-                child: Text(operation.name.toString()),
-              );
+          Wrap(
+            direction: Axis.vertical,
+            children: [
+              for (var numberOption in options)
+                SizedBox(
+                  width: 120,
+                  child: CheckboxListTile(
+                    title: Text(numberOption.value.toString()),
+                    value: numberOption.id == firstNumber?.id,
+                    onChanged: firstNumber != null &&
+                            selectedOperation == null &&
+                            numberOption.id != firstNumber?.id
+                        ? null
+                        : _selectNumber(numberOption: numberOption),
+                    // controlAffinity:
+                    //     ListTileControlAffinity.leading, //  <-- leading Checkbox
+                  ),
+                ),
+            ],
+          ),
+          Wrap(
+            children: OperationEnums.values.expand((operation) {
+              return [
+                ElevatedButton(
+                  onPressed: firstNumber == null
+                      ? null
+                      : _selectOperation(operation: operation),
+                  child: Text(operation.name.toString()),
+                ),
+                const SizedBox(
+                  width: 5,
+                )
+              ];
             }).toList(),
           ),
         ],
