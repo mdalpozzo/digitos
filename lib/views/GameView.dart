@@ -1,9 +1,8 @@
+import 'package:digitos/models/game_parameters.dart';
 import 'package:digitos/operations.dart';
+import 'package:digitos/services/game_service.dart';
 import 'package:digitos/widgets/SuccessModal.dart';
 import 'package:flutter/material.dart';
-
-// TODO replace with remote data
-int targetNumber = 10;
 
 List<NumberOption> initialOptions = [
   const NumberOption(id: '1', value: 1),
@@ -36,6 +35,9 @@ class _GameViewState extends State<GameView> {
 
   NumberOption? firstNumber;
   OperationEnums? selectedOperation;
+
+  // TODO replace with remote data
+  int targetNumber = 10;
 
   _selectNumber({required NumberOption numberOption}) {
     void innerSelect(bool? selected) {
@@ -132,7 +134,7 @@ class _GameViewState extends State<GameView> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: SuccessModal(onConfirm: () {
-            _resetGame();
+            _startNewGame();
             Navigator.of(context).pop();
           }),
         );
@@ -142,7 +144,6 @@ class _GameViewState extends State<GameView> {
 
   void _resetGame() {
     setState(() {
-      // TODO fetch new options
       options = [
         const NumberOption(id: '1', value: 1),
         const NumberOption(id: '2', value: 2),
@@ -154,6 +155,27 @@ class _GameViewState extends State<GameView> {
       firstNumber = null;
       selectedOperation = null;
     });
+  }
+
+  void _startNewGame() async {
+    // TODO get userid setup auth
+    GameParameters? newGame =
+        await GameService().getNewGame('isK5PU14l793GZlSxM16');
+    if (newGame == null) {
+      // handle error
+    } else {
+      setState(() {
+        options = newGame.initialNumbers
+            .map((number) => NumberOption(
+                  id: number.toString(),
+                  value: number,
+                ))
+            .toList();
+        targetNumber = newGame.targetNumber;
+        firstNumber = null;
+        selectedOperation = null;
+      });
+    }
   }
 
   @override
@@ -177,8 +199,24 @@ class _GameViewState extends State<GameView> {
         // wireframe for each widget.
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          const Text(
-            'Play the game...',
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('1. Select a number.'),
+              Text('2. Select an operation.'),
+              Text('3. Select another number.'),
+              Text('4. Repeat until you reach the target number.'),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            'Target number: $targetNumber',
+            style: Theme.of(context).textTheme.headline4,
+          ),
+          const SizedBox(
+            height: 20,
           ),
           Wrap(
             direction: Axis.vertical,
