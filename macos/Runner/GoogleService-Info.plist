@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.digitos.RunnerTests</string>
+	<string>com.digitos.digitos.RunnerTests</string>
 	<key>PROJECT_ID</key>
 	<string>digitos-2ba0b</string>
 	<key>STORAGE_BUCKET</key>

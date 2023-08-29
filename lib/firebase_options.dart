@@ -45,17 +45,17 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyAgC43k0z5R0EAQM-so4hSI5owKDPMe_-k',
-    appId: '1:540649544846:web:608a1df51c3a8d9b18bddf',
+    appId: '1:540649544846:web:42eb8960964a77b318bddf',
     messagingSenderId: '540649544846',
     projectId: 'digitos-2ba0b',
     authDomain: 'digitos-2ba0b.firebaseapp.com',
     storageBucket: 'digitos-2ba0b.appspot.com',
-    measurementId: 'G-27VQPLZ69D',
+    measurementId: 'G-0S34JC82HX',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyANH9miWbWOW368glX4cKkWp_j5ZLWn_6E',
-    appId: '1:540649544846:android:3741289cb5b1474518bddf',
+    appId: '1:540649544846:android:e4d8c91fbe055f0718bddf',
     messagingSenderId: '540649544846',
     projectId: 'digitos-2ba0b',
     storageBucket: 'digitos-2ba0b.appspot.com',
@@ -63,21 +63,21 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDHv1WrlCcJp8cN5RH7zQ0GsVaA6nL--a4',
-    appId: '1:540649544846:ios:2e6a8d461647abf618bddf',
+    appId: '1:540649544846:ios:cece2f96db63515d18bddf',
     messagingSenderId: '540649544846',
     projectId: 'digitos-2ba0b',
     storageBucket: 'digitos-2ba0b.appspot.com',
-    iosClientId: '540649544846-v3p9jvat1gbjgkpnrc6aba00uj4qfpfs.apps.googleusercontent.com',
-    iosBundleId: 'com.example.digitos',
+    iosClientId: '540649544846-8h14dr2hqbbnv56bbho5jo9gt4pt8tiq.apps.googleusercontent.com',
+    iosBundleId: 'com.digitos.digitos',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDHv1WrlCcJp8cN5RH7zQ0GsVaA6nL--a4',
-    appId: '1:540649544846:ios:368129bca1a23de818bddf',
+    appId: '1:540649544846:ios:18039598bd59eb5018bddf',
     messagingSenderId: '540649544846',
     projectId: 'digitos-2ba0b',
     storageBucket: 'digitos-2ba0b.appspot.com',
-    iosClientId: '540649544846-6hot7905stlqlj4ahmb8ujpqcg58redg.apps.googleusercontent.com',
-    iosBundleId: 'com.example.digitos.RunnerTests',
+    iosClientId: '540649544846-40a7al0r71m9uualtgqkv5jb7kk5radd.apps.googleusercontent.com',
+    iosBundleId: 'com.digitos.digitos.RunnerTests',
   );
 }

@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:540649544846:android:3741289cb5b1474518bddf",
+        "mobilesdk_app_id": "1:540649544846:android:e4d8c91fbe055f0718bddf",
         "android_client_info": {
-          "package_name": "com.example.digitos"
+          "package_name": "com.digitos.digitos"
         }
       },
       "oauth_client": [
