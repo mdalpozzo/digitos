@@ -17,6 +17,9 @@ import 'router.dart';
 import 'settings/settings.dart';
 import 'style/palette.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 void main() async {
   // Basic logging setup.
   Logger.root.level = kDebugMode ? Level.FINE : Level.INFO;
@@ -37,6 +40,10 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(MyApp());
 }
