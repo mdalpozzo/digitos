@@ -1,11 +1,11 @@
+import 'package:digitos/game_screen/game_view_model.dart';
 import 'package:digitos/models/number_option.dart';
-import 'package:digitos/models/puzzle.dart';
 import 'package:digitos/operations.dart';
-import 'package:digitos/services/game_service.dart';
 import 'package:digitos/elements/operationEnumToDisplayString.dart';
 import 'package:digitos/widgets/SuccessModal.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
 // action in the IDE, or press "p" in the console), to see the
@@ -21,98 +21,28 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   String error = '';
 
-  Puzzle? puzzle;
-  List<NumberOption> options = [];
-
-  // TODO these should live in a GameScreenModel
-  NumberOption? firstNumber;
-  NumberOption? secondNumber;
-  OperationEnums? selectedOperation;
-  int numberOfOperations = 0;
-
-  // TODO replace with remote data
-  int targetNumber = 10;
-
   @override
   void initState() {
     super.initState();
-    _fetchInitialOptions();
-  }
 
-  void _fetchInitialOptions() async {
-    // Fetch initial options asynchronously
-    // Replace the below line with your actual data fetching logic
-    Puzzle? fetchedPuzzle = await GameService().getDailyPuzzle();
-
-    if (fetchedPuzzle == null) {
-      // TODO handle error
-      setState(() {
-        error = 'No puzzle found';
-      });
-      return null;
-    }
-
-    List<NumberOption> fetchedOptions = fetchedPuzzle.initialNumbers
-        .map((number) => NumberOption(
-              id: number.toString(),
-              value: number,
-            ))
-        .toList();
-
-    setState(() {
-      puzzle = fetchedPuzzle;
-      options = fetchedOptions;
-      error = '';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final gameViewModel = Provider.of<GameViewModel>(context, listen: false);
+      gameViewModel.initDailyPuzzle();
     });
   }
 
-  _selectNumber({required NumberOption numberOption}) {
-    bool isFirstNumber = numberOption.id == firstNumber?.id;
-    bool isSecondNumber = numberOption.id == secondNumber?.id;
-
-    if (isFirstNumber) {
-      // unselect
-      setState(() {
-        firstNumber = null;
-      });
-    } else if (isSecondNumber) {
-      // unselect
-      setState(() {
-        secondNumber = null;
-      });
-    } else {
-      // select
-      if (firstNumber == null) {
-        setState(() {
-          firstNumber = numberOption;
-        });
-      } else {
-        setState(() {
-          secondNumber = numberOption;
-        });
-      }
-    }
-  }
-
-  _selectOperation({required OperationEnums operation}) {
-    setState(() {
-      selectedOperation = operation == selectedOperation ? null : operation;
-    });
-  }
-
-  void _showNotIntegerAlert(BuildContext context, num result) {
+  void _showAlert(BuildContext context, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Non-Integer Result'),
-          content:
-              Text('The result of the division is not an integer: $result'),
+          // title: const Text('Non-Integer Result'),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -121,122 +51,23 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  // TODO - submit button
-  // execute the operation
-  // _executeOperation(
-  //   operation: selectedOperationRef,
-  //   a: firstNumberRef,
-  //   b: numberOption,
-  // );
-  _executeOperation({
-    required OperationEnums operation,
-    required NumberOption a,
-    required NumberOption b,
-  }) {
-    num result = Operations.handleOperation(operation, a.value, b.value);
-
-    if (result == targetNumber) {
-      _showSuccessModal(context);
-    }
-
-    bool isInt = result is int || result.remainder(1.0) == 0.0;
-
-    if (!isInt) {
-      // TODO handle error - result is not an int
-      _showNotIntegerAlert(context, result);
-      return null;
-    } else {
-      int resultAsInt = result.toInt();
-
-      setState(() {
-        List<NumberOption> newOptions = [];
-
-        int idIncrementer = 0;
-
-        for (var option in options) {
-          // skip the options that were used in the operation
-          if (option.id == a.id || option.id == b.id) {
-            continue;
-          }
-
-          // add leftover options and reset ids
-          newOptions.add(NumberOption(
-            id: idIncrementer.toString(),
-            value: option.value,
-          ));
-          idIncrementer++;
-        }
-
-        // add the result of the operation to the beginning of the list
-        newOptions.insert(
-          0,
-          NumberOption(
-            id: idIncrementer.toString(),
-            value: resultAsInt,
-          ),
-        );
-
-        numberOfOperations++;
-        options = newOptions;
-        firstNumber = null;
-        secondNumber = null;
-        selectedOperation = null;
-      });
-    }
-  }
-
   void _showSuccessModal(BuildContext context) {
+    final gameViewModel = Provider.of<GameViewModel>(context, listen: false);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: SuccessModal(onConfirm: () {
-            _startNewGame();
-            Navigator.of(context).pop();
-          }),
+          content: SuccessModal(
+            onConfirm: () {
+              gameViewModel.startNewGame();
+              Navigator.of(context).pop();
+            },
+            numberOfMoves: gameViewModel.numberOfOperations,
+          ),
         );
       },
     );
-  }
-
-  void _clearSelection() {
-    setState(() {
-      firstNumber = null;
-      selectedOperation = null;
-      secondNumber = null;
-    });
-  }
-
-  void _resetGame() {
-    setState(() {
-      options = puzzle?.toOptions();
-      firstNumber = null;
-      selectedOperation = null;
-      secondNumber = null;
-      numberOfOperations = 0;
-    });
-  }
-
-  void _startNewGame() async {
-    // TODO get userid, setup auth, some anonymous userid for those who don't set up accounts (deviceid?)
-    Puzzle? newGame = await GameService().getNewGame(
-      'userId',
-      excludedPuzzleIds: [puzzle?.id ?? ''],
-    );
-
-    if (newGame == null) {
-      // TODO handle error
-    } else {
-      setState(() {
-        puzzle = newGame;
-        options = newGame.toOptions();
-        targetNumber = newGame.targetNumber;
-        firstNumber = null;
-        secondNumber = null;
-        selectedOperation = null;
-        numberOfOperations = 0;
-      });
-    }
   }
 
   void _exit(BuildContext context) async {
@@ -271,6 +102,14 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final gameViewModel = Provider.of<GameViewModel>(context);
+    List<NumberOption> options = gameViewModel.options;
+    NumberOption? firstNumber = gameViewModel.firstNumber;
+    NumberOption? secondNumber = gameViewModel.secondNumber;
+    OperationEnums? selectedOperation = gameViewModel.selectedOperation;
+    int numberOfOperations = gameViewModel.numberOfOperations;
+    int targetNumber = gameViewModel.targetNumber;
+
     bool selectionsExist = firstNumber != null ||
         secondNumber != null ||
         selectedOperation != null;
@@ -294,12 +133,12 @@ class _GameScreenState extends State<GameScreen> {
               ),
               actions: [
                 IconButton(
-                  onPressed: _resetGame,
+                  onPressed: gameViewModel.resetGame,
                   icon: const Icon(Icons.refresh),
                   color: Theme.of(context).colorScheme.surface,
                 ),
                 IconButton(
-                  onPressed: _startNewGame,
+                  onPressed: gameViewModel.startNewGame,
                   icon: const Icon(Icons.fast_forward),
                   color: Theme.of(context).colorScheme.surface,
                 ),
@@ -425,7 +264,7 @@ class _GameScreenState extends State<GameScreen> {
                                             .inversePrimary,
                               ),
                               onPressed: () {
-                                _selectNumber(numberOption: numberOption);
+                                gameViewModel.selectNumber(numberOption);
                               },
                               child: LayoutBuilder(
                                 builder: (context, constraints) {
@@ -473,7 +312,7 @@ class _GameScreenState extends State<GameScreen> {
                               return [
                                 ElevatedButton(
                                   onPressed: () {
-                                    _selectOperation(operation: operation);
+                                    gameViewModel.selectOperation(operation);
                                   },
                                   //       ElevatedButton.styleFrom(
                                   // shape: const CircleBorder(), // Makes the button circular
@@ -534,7 +373,7 @@ class _GameScreenState extends State<GameScreen> {
                               maintainAnimation: true,
                               maintainState: true,
                               child: ElevatedButton(
-                                onPressed: _clearSelection,
+                                onPressed: gameViewModel.clearSelection,
                                 style: ElevatedButton.styleFrom(
                                   shape:
                                       const CircleBorder(), // Makes the button circular
@@ -555,22 +394,26 @@ class _GameScreenState extends State<GameScreen> {
                               maintainState: true,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  OperationEnums? selectedOperation =
-                                      this.selectedOperation;
-                                  NumberOption? firstNumber = this.firstNumber;
-                                  NumberOption? secondNumber =
-                                      this.secondNumber;
-
                                   if (selectedOperation == null ||
                                       firstNumber == null ||
                                       secondNumber == null) {
-                                    // TODO handle error
+                                    _showAlert(context,
+                                        'Two numbers and an operation must be selected.');
                                   } else {
-                                    _executeOperation(
+                                    OperationResult result =
+                                        gameViewModel.executeOperation(
                                       operation: selectedOperation,
                                       a: firstNumber,
                                       b: secondNumber,
                                     );
+
+                                    if (!result.success) {
+                                      _showAlert(context, result.message);
+                                    } else {
+                                      if (gameViewModel.puzzleSolved) {
+                                        _showSuccessModal(context);
+                                      }
+                                    }
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(

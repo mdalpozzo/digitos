@@ -4,6 +4,7 @@
 
 import 'dart:developer' as dev;
 
+import 'package:digitos/game_screen/game_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -77,6 +78,7 @@ class MyApp extends StatelessWidget {
             // Ensures that music starts immediately.
             lazy: false,
           ),
+          ChangeNotifierProvider(create: (context) => GameViewModel()),
         ],
         child: Builder(builder: (context) {
           final palette = context.watch<Palette>();

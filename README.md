@@ -1,7 +1,7 @@
 A starter Flutter project with a minimal shell of a game
 including the following features:
 
-- main menu screen
+- home screen
 - basic navigation
 - game-y theming
 - settings
@@ -159,7 +159,7 @@ for more information.
 ## Settings
 
 The settings page is enabled by default, and accessible both
-from the main menu and through the "gear" button in the play session screen.
+from the home and through the "gear" button in the play session screen.
 
 Settings are saved to local storage using the 
 [`shared_preferences`](https://pub.dev/packages/shared_preferences)
