@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:digitos/services/account_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsController>();
     final palette = context.watch<Palette>();
+    final accountService = context.watch<AccountService>();
 
     return Scaffold(
       backgroundColor: palette.backgroundSettings,
@@ -39,8 +41,9 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             _gap,
-            const _NameChangeLine(
+            _NameChangeLine(
               'Name',
+              accountService.currentGameData?.displayName,
             ),
             ValueListenableBuilder<bool>(
               valueListenable: settings.soundsOn,
@@ -58,19 +61,19 @@ class SettingsScreen extends StatelessWidget {
                 onSelected: () => settings.toggleMusicOn(),
               ),
             ),
-            _SettingsLine(
-              'Reset progress',
-              const Icon(Icons.delete),
-              onSelected: () {
-                context.read<PlayerProgress>().reset();
+            // _SettingsLine(
+            //   'Reset progress',
+            //   const Icon(Icons.delete),
+            //   onSelected: () {
+            //     context.read<PlayerProgress>().reset();
 
-                final messenger = ScaffoldMessenger.of(context);
-                messenger.showSnackBar(
-                  const SnackBar(
-                      content: Text('Player progress has been reset.')),
-                );
-              },
-            ),
+            //     final messenger = ScaffoldMessenger.of(context);
+            //     messenger.showSnackBar(
+            //       const SnackBar(
+            //           content: Text('Player progress has been reset.')),
+            //     );
+            //   },
+            // ),
             _gap,
           ],
         ),
@@ -87,13 +90,15 @@ class SettingsScreen extends StatelessWidget {
 
 class _NameChangeLine extends StatelessWidget {
   final String title;
+  final String? currDisplayName;
 
-  const _NameChangeLine(this.title);
+  const _NameChangeLine(
+    this.title,
+    this.currDisplayName,
+  );
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watch<SettingsController>();
-
     return InkResponse(
       highlightShape: BoxShape.rectangle,
       onTap: () => showCustomNameDialog(context),
@@ -108,14 +113,11 @@ class _NameChangeLine extends StatelessWidget {
                   fontSize: 30,
                 )),
             const Spacer(),
-            ValueListenableBuilder(
-              valueListenable: settings.playerName,
-              builder: (context, name, child) => Text(
-                '‘$name’',
-                style: const TextStyle(
-                  fontFamily: 'Permanent Marker',
-                  fontSize: 30,
-                ),
+            Text(
+              currDisplayName == null ? '-' : '$currDisplayName',
+              style: const TextStyle(
+                fontFamily: 'Permanent Marker',
+                fontSize: 30,
               ),
             ),
           ],

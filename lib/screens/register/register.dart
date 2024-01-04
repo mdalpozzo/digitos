@@ -63,6 +63,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     String password = _passwordController.text.trim();
                     if (email.isNotEmpty && password.isNotEmpty) {
                       try {
+                        var oldUserId = authService.currentUser?.uid;
+
                         await authService.createAccount(email, password);
 
                         var newUserId = authService.currentUser?.uid;
@@ -70,7 +72,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (newUserId != null) {
                           // sync anonymous game data
                           await accountService
-                              .transferGameDataToPermanentAccount(newUserId);
+                              .transferGameDataToPermanentAccount(newUserId, oldUserId);
                         } else {
                           // TODO handle can't sync anonymous game data error
                           _log.warning(

@@ -79,11 +79,6 @@ class GameViewModel with ChangeNotifier {
     OperationResult operationResult =
         OperationResult(success: true, message: 'OK');
 
-    if (result == targetNumber) {
-      puzzleSolved = true;
-      _handlePuzzleSolved(puzzle!);
-    }
-
     bool isInt = result is int || result.remainder(1.0) == 0.0;
     if (!isInt) {
       operationResult = OperationResult(
@@ -98,6 +93,11 @@ class GameViewModel with ChangeNotifier {
       firstNumber = null;
       secondNumber = null;
       selectedOperation = null;
+
+      if (result == targetNumber) {
+        puzzleSolved = true;
+        _handlePuzzleSolved(puzzle!);
+      }
     }
     notifyListeners();
 

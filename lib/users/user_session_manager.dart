@@ -13,9 +13,6 @@ class UserSessionManager {
   Future<void> handleLogin(String email, String password) async {
     // Use AuthService to login
     await _authService.loginUser(email, password);
-
-    // Load game data using AccountService
-    await _accountService.loadGameData();
   }
 
   // You can add more methods here to handle logout, account creation, etc.

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/constants.dart';
 import 'package:digitos/models/game_data.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logging/logging.dart';
 
 class AccountService {
@@ -10,9 +13,19 @@ class AccountService {
   final AuthService _authService;
   final _log = Logger('AccountService');
 
-  GameData? _currentGameData;
+  late final StreamSubscription<User?> _authSubscription;
 
-  AccountService(this._authService); // Constructor injection of AuthService
+  AccountService(this._authService) {
+    // Constructor injection of AuthService
+
+    // Set up a listener for user authentication changes
+    _authSubscription = _authService.onAuthChanges.listen((user) {
+      loadGameData();
+      // Additional actions if needed
+    });
+  }
+
+  GameData? _currentGameData;
 
   Future<void> saveGameData(GameData gameData) async {
     String userId = _authService.currentUser?.uid ?? "anonymous";
@@ -23,9 +36,18 @@ class AccountService {
   }
 
   // Method to transfer game data from anonymous to permanent account
-  Future<void> transferGameDataToPermanentAccount(String newUserId) async {
+  Future<void> transferGameDataToPermanentAccount(
+    String newUserId,
+    String? oldUserId,
+  ) async {
+    if (newUserId == oldUserId) {
+      // Nothing to do
+      _log.info(
+          'transferGameDataToPermanentAccount: Old uid and new uid are the same, no need to migrate data.');
+      return;
+    }
+
     // Fetch game data from anonymous account
-    String oldUserId = _authService.currentUser?.uid ?? "anonymous";
     DocumentSnapshot oldUserData = await _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(oldUserId)
@@ -51,7 +73,15 @@ class AccountService {
   }
 
   Future<void> loadGameData() async {
-    String userId = _authService.currentUser?.uid ?? "anonymous";
+    String? userId = _authService.currentUser?.uid;
+
+    if (userId == null) {
+      // TODO Handle the case where there is no user ID
+      _log.severe('loadGameData: No user ID found');
+
+      return;
+    }
+
     DocumentSnapshot snapshot = await _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(userId)
@@ -78,18 +108,20 @@ class AccountService {
       return;
     }
 
-    // update the completed games list
-    if (_currentGameData != null) {
-      _currentGameData!.gamesCompleted.add(
-        CompletedGameData(
-          puzzleId: puzzleId,
-          moves: moves,
-          completedAt: DateTime.now(),
-        ),
-      );
-    }
+    // ===== update the completed games list
 
-    // update best score
+    // Create a mutable copy of the gamesCompleted list
+    var newGamesCompleted =
+        List<CompletedGameData>.from(_currentGameData?.gamesCompleted ?? []);
+
+    // Add the new completed game
+    newGamesCompleted.add(CompletedGameData(
+      puzzleId: puzzleId,
+      moves: moves,
+      completedAt: DateTime.now(),
+    ));
+
+    // ===== Update best score
     int? prevBest = _currentGameData?.best;
     int newBest = prevBest ?? moves;
     if (moves < newBest) {
@@ -104,5 +136,28 @@ class AccountService {
           _currentGameData!.gamesCompleted.map((e) => e.toJson()).toList(),
       'best': newBest,
     });
+  }
+
+  Future<void> updateUserName(String newName) async {
+    String? userId = _authService.currentUser?.uid;
+    // TODO enforce display name uniqueness
+
+    if (userId == null) {
+      // TODO Handle the case where there is no user ID
+      _log.severe('changeUserName: No user ID found');
+
+      return;
+    }
+
+    await _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(userId)
+        .update({
+      'displayName': newName,
+    });
+  }
+
+  void dispose() {
+    _authSubscription.cancel();
   }
 }

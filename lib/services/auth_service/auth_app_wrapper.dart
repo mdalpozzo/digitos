@@ -34,8 +34,6 @@ class _AuthAppWrapperState extends State<AuthAppWrapper> {
         if (user != null) {
           if (!user.isAnonymous) {
             _log.info('Auth state changed: User logged in: ${user.toString()}');
-            // Handle the transition of game data here
-            accountService.transferGameDataToPermanentAccount(user.uid);
           } else {
             _log.info(
                 'Auth state changed: Anonymous user logged in: ${user.toString()}');

@@ -23,7 +23,7 @@ class SuccessModal extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Text(
-          'Success in ${numberOfMoves.toString()} moves',
+          'Solved in ${numberOfMoves.toString()} moves',
           style: TextStyle(fontSize: 20),
         ),
         const SizedBox(height: 20),

@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:digitos/services/account_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -45,12 +46,18 @@ class _CustomNameDialogState extends State<CustomNameDialog> {
             textAlign: TextAlign.center,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.done,
-            onChanged: (value) {
-              context.read<SettingsController>().setPlayerName(value);
-            },
-            onSubmitted: (value) {
+            // onChanged: (value) {
+            //   context.read<AccountService>().updateUserName(value);
+            // },
+            onSubmitted: (value) async {
+              // TODO handle error
+
               // Player tapped 'Submit'/'Done' on their keyboard.
-              Navigator.pop(context);
+              await context.read<AccountService>().updateUserName(value);
+
+              if (mounted) {
+                Navigator.pop(context);
+              }
             },
           ),
           TextButton(
@@ -71,6 +78,7 @@ class _CustomNameDialogState extends State<CustomNameDialog> {
   @override
   void initState() {
     super.initState();
-    _controller.text = context.read<SettingsController>().playerName.value;
+    _controller.text =
+        context.read<AccountService>().currentGameData?.displayName ?? '';
   }
 }
