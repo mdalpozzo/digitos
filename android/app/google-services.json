@@ -41,6 +41,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540649544846:android:11efc60ae846751118bddf",
+        "android_client_info": {
+          "package_name": "com.digitosgames.digitos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540649544846-oe2ii9usgpj5mpauot3u1rg1tu7na74v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANH9miWbWOW368glX4cKkWp_j5ZLWn_6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540649544846-ndgq0jin8hj904paf1jb9bbkjeeeob28.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "540649544846-40a7al0r71m9uualtgqkv5jb7kk5radd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.digitos.digitos.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
