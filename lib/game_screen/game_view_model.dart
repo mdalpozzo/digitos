@@ -8,7 +8,10 @@ class OperationResult {
   final bool success;
   final String message;
 
-  OperationResult({required this.success, required this.message});
+  OperationResult({
+    required this.success,
+    required this.message,
+  });
 }
 
 class GameViewModel with ChangeNotifier {
