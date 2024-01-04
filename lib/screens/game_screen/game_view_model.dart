@@ -1,3 +1,4 @@
+import 'package:digitos/services/account_service.dart';
 import 'package:flutter/material.dart';
 import 'package:digitos/models/number_option.dart';
 import 'package:digitos/models/puzzle.dart';
@@ -15,6 +16,10 @@ class OperationResult {
 }
 
 class GameViewModel with ChangeNotifier {
+  final AccountService accountService;
+
+  GameViewModel({required this.accountService});
+
   String error = '';
   Puzzle? puzzle;
   List<NumberOption> options = [];
@@ -76,6 +81,7 @@ class GameViewModel with ChangeNotifier {
 
     if (result == targetNumber) {
       puzzleSolved = true;
+      _handlePuzzleSolved(puzzle!);
     }
 
     bool isInt = result is int || result.remainder(1.0) == 0.0;
@@ -147,5 +153,10 @@ class GameViewModel with ChangeNotifier {
       // todo
       // Handle error
     }
+  }
+
+  void _handlePuzzleSolved(Puzzle puzzle) async {
+    // TODO handle errors
+    await accountService.addNewCompletedGame(puzzle.id, numberOfOperations);
   }
 }

@@ -97,7 +97,11 @@ class MyApp extends StatelessWidget {
             // Ensures that music starts immediately.
             lazy: false,
           ),
-          ChangeNotifierProvider(create: (context) => GameViewModel()),
+          ChangeNotifierProvider(
+            create: (context) => GameViewModel(
+              accountService: context.read<AccountService>(),
+            ),
+          ),
         ],
         child: Builder(builder: (context) {
           final palette = context.watch<Palette>();

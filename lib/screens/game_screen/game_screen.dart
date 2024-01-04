@@ -410,6 +410,7 @@ class _GameScreenState extends State<GameScreen> {
                                     if (!result.success) {
                                       _showAlert(context, result.message);
                                     } else {
+                                      // Success!
                                       if (gameViewModel.puzzleSolved) {
                                         _showSuccessModal(context);
                                       }
