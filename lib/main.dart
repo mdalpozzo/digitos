@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
             create: (_) => AuthService(),
             lazy: false,
           ),
-          Provider<AccountService>(
+          ChangeNotifierProvider<AccountService>(
             create: (context) => AccountService(context.read<AuthService>()),
             lazy: false,
           ),

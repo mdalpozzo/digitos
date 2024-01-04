@@ -57,7 +57,6 @@ class HomeScreen extends StatelessWidget {
           ResponsiveScreen(
             topMessageArea: Stack(
               children: [
-                // Centered "Best" text
                 Align(
                   alignment: Alignment.center,
                   child: Row(
@@ -67,20 +66,18 @@ class HomeScreen extends StatelessWidget {
                         'Best',
                         style: TextStyle(
                           fontFamily: 'Permanent Marker',
-                          fontSize: 20,
+                          fontSize: 30,
                         ),
                       ),
                       SizedBox(width: 20),
-                      bestScore != null
-                          ? Text(bestScore.toString())
-                          : Text(
-                              '-',
-                              style: TextStyle(
-                                fontFamily: 'Permanent Marker',
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                      Text(
+                        bestScore != null ? bestScore.toString() : '-',
+                        style: TextStyle(
+                          fontFamily: 'Permanent Marker',
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),

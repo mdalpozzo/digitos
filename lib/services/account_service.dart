@@ -4,10 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/constants.dart';
 import 'package:digitos/models/game_data.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
+import 'package:digitos/services/base_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logging/logging.dart';
 
-class AccountService {
+class AccountService extends BaseService {
   // TODO this should use the datastore abstraction service
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AuthService _authService;
@@ -33,6 +34,8 @@ class AccountService {
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(userId)
         .set(gameData.toJson());
+
+    notifyListeners();
   }
 
   // Method to transfer game data from anonymous to permanent account
@@ -70,6 +73,8 @@ class AccountService {
           .doc(oldUserId)
           .delete();
     }
+
+    notifyListeners();
   }
 
   Future<void> loadGameData() async {
@@ -94,6 +99,8 @@ class AccountService {
       // TODO Handle the case where there is no existing game data
       _currentGameData = GameData();
     }
+
+    notifyListeners();
   }
 
   GameData? get currentGameData => _currentGameData;
@@ -132,10 +139,11 @@ class AccountService {
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(userId)
         .update({
-      'games_completed':
-          _currentGameData!.gamesCompleted.map((e) => e.toJson()).toList(),
+      'gamesCompleted': newGamesCompleted.map((e) => e.toJson()).toList(),
       'best': newBest,
     });
+
+    notifyListeners();
   }
 
   Future<void> updateUserName(String newName) async {
@@ -155,9 +163,15 @@ class AccountService {
         .update({
       'displayName': newName,
     });
+
+    _currentGameData?.displayName = newName;
+
+    notifyListeners();
   }
 
+  @override
   void dispose() {
     _authSubscription.cancel();
+    super.dispose();
   }
 }

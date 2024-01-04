@@ -27,7 +27,28 @@ class AuthService {
 
   // Method to sign in anonymously
   Future<UserCredential> signInAnonymously() async {
-    return await _firebaseAuth.signInAnonymously();
+    var userCred = await _firebaseAuth.signInAnonymously();
+
+    String? anonymousUid = userCred.user?.uid;
+
+    if (anonymousUid == null) {
+      _log.warning(
+          'signInAnonymously: Anonymous user ID is null, could not create anonymous user data');
+      return userCred;
+    }
+
+    // Create a new user document in Firestore
+    await _dataStore.addDocument(
+      FirestorePaths.USERS_COLLECTION,
+      {
+        'isAnonymous': true,
+        'isPremium': false, // TODO
+        'lastLogin': DateTime.now(), // TODO update this on every login
+      },
+      documentId: anonymousUid,
+    );
+
+    return userCred;
   }
 
   // Method to sign out

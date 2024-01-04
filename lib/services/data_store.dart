@@ -16,7 +16,11 @@ class DataStore {
   DataStore._internal();
 
   // Method to add a document to a collection
-  Future<void> addDocument(String collection, Map<String, dynamic> data) async {
+  Future<void> addDocument(String collection, Map<String, dynamic> data, {String? documentId}) async {
+    if (documentId != null) {
+      await _firestore.collection(collection).doc(documentId).set(data);
+      return;
+    }
     await _firestore.collection(collection).add(data);
   }
 

@@ -32,7 +32,7 @@ class CompletedGameData {
 
 class GameData {
   final int? best;
-  final String? displayName;
+  String? displayName;
   final List<String> gamesSeen;
   final List<CompletedGameData> gamesCompleted;
 

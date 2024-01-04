@@ -1,5 +1,6 @@
 import 'package:digitos/screens/game_screen/game_view_model.dart';
 import 'package:digitos/models/number_option.dart';
+import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/operations.dart';
 import 'package:digitos/widgets/operationEnumToDisplayString.dart';
 import 'package:digitos/widgets/SuccessModal.dart';
@@ -103,6 +104,8 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final gameViewModel = Provider.of<GameViewModel>(context);
+    final accountService = Provider.of<AccountService>(context);
+
     List<NumberOption> options = gameViewModel.options;
     NumberOption? firstNumber = gameViewModel.firstNumber;
     NumberOption? secondNumber = gameViewModel.secondNumber;
@@ -199,10 +202,14 @@ class _GameScreenState extends State<GameScreen> {
                                   fit: BoxFit.fitWidth,
                                   child: Column(
                                     children: [
-                                      const Row(
+                                      Row(
                                         children: [
-                                          Text('Your Best: '),
-                                          Text('4'),
+                                          const Text('Your Best: '),
+                                          Text(
+                                            accountService.currentGameData?.best
+                                                    .toString() ??
+                                                '-',
+                                          ),
                                         ],
                                       ),
                                       Text(numberOfOperations.toString(),
