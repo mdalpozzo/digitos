@@ -1,4 +1,4 @@
-import 'package:digitos/operations.dart';
+import 'package:digitos/services/operations.dart';
 
 operationEnumToDisplayString(OperationEnums? operation) {
   switch (operation) {

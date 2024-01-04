@@ -9,15 +9,15 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart' hide Level;
 import 'package:provider/provider.dart';
 
-import '../audio/audio_controller.dart';
-import '../audio/sounds.dart';
-import '../game_internals/level_state.dart';
-import '../game_internals/score.dart';
+import '../../audio/audio_controller.dart';
+import '../../audio/sounds.dart';
+import '../../features/player_progress/level_state.dart';
+import '../../features/player_progress/score.dart';
 import '../level_selection/levels.dart';
-import '../player_progress/player_progress.dart';
-import '../style/confetti.dart';
-import '../style/my_button.dart';
-import '../style/palette.dart';
+import '../../features/player_progress/player_progress.dart';
+import '../../style/confetti.dart';
+import '../../style/my_button.dart';
+import '../../style/palette.dart';
 import 'game_widget.dart';
 
 /// This widget defines the entirety of the screen that the player sees when

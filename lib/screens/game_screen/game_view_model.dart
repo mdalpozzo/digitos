@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:digitos/models/number_option.dart';
 import 'package:digitos/models/puzzle.dart';
-import 'package:digitos/operations.dart';
+import 'package:digitos/services/operations.dart';
 import 'package:digitos/services/game_service.dart';
 
 class OperationResult {

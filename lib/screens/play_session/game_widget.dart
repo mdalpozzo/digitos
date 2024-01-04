@@ -5,9 +5,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../audio/audio_controller.dart';
-import '../audio/sounds.dart';
-import '../game_internals/level_state.dart';
+import '../../audio/audio_controller.dart';
+import '../../audio/sounds.dart';
+import '../../features/player_progress/level_state.dart';
 import '../level_selection/levels.dart';
 
 /// This widget defines the game UI itself, without things like the settings

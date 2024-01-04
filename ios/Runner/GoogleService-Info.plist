@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>540649544846-8h14dr2hqbbnv56bbho5jo9gt4pt8tiq.apps.googleusercontent.com</string>
+	<string>540649544846-a6b6hk9blcpkv6uvl9ih1nmpsaf6i576.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.540649544846-8h14dr2hqbbnv56bbho5jo9gt4pt8tiq</string>
+	<string>com.googleusercontent.apps.540649544846-a6b6hk9blcpkv6uvl9ih1nmpsaf6i576</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDHv1WrlCcJp8cN5RH7zQ0GsVaA6nL--a4</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.digitos.digitos</string>
+	<string>com.example.basic.RunnerTests</string>
 	<key>PROJECT_ID</key>
 	<string>digitos-2ba0b</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:540649544846:ios:cece2f96db63515d18bddf</string>
+	<string>1:540649544846:ios:9ffbe74175e0eee618bddf</string>
 	<key>DATABASE_URL</key>
 	<string>https://digitos-2ba0b-default-rtdb.firebaseio.com</string>
 </dict>

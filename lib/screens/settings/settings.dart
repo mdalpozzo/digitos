@@ -24,7 +24,7 @@ class SettingsController {
   /// a separate flag (as opposed to some kind of {off, sound, everything}
   /// enum) means that the player will not lose their [soundsOn] and
   /// [musicOn] preferences when they temporarily mute the game.
-  ValueNotifier<bool> audioOn = ValueNotifier(true);
+  ValueNotifier<bool> audioOn = ValueNotifier(false);
 
   /// The player's name. Used for things like high score lists.
   ValueNotifier<String> playerName = ValueNotifier('Player');

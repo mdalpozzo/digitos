@@ -1,7 +1,7 @@
-import 'package:digitos/game_screen/game_view_model.dart';
+import 'package:digitos/screens/game_screen/game_view_model.dart';
 import 'package:digitos/models/number_option.dart';
-import 'package:digitos/operations.dart';
-import 'package:digitos/elements/operationEnumToDisplayString.dart';
+import 'package:digitos/services/operations.dart';
+import 'package:digitos/widgets/operationEnumToDisplayString.dart';
 import 'package:digitos/widgets/SuccessModal.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

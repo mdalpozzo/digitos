@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../audio/audio_controller.dart';
-import '../audio/sounds.dart';
-import '../player_progress/player_progress.dart';
-import '../style/my_button.dart';
-import '../style/palette.dart';
-import '../style/responsive_screen.dart';
+import '../../audio/audio_controller.dart';
+import '../../audio/sounds.dart';
+import '../../features/player_progress/player_progress.dart';
+import '../../style/my_button.dart';
+import '../../style/palette.dart';
+import '../../style/responsive_screen.dart';
 import 'levels.dart';
 
 class LevelSelectionScreen extends StatelessWidget {

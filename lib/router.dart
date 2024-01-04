@@ -2,20 +2,20 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:digitos/game_screen/game_screen.dart';
+import 'package:digitos/screens/game_screen/game_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'game_internals/score.dart';
-import 'level_selection/level_selection_screen.dart';
-import 'level_selection/levels.dart';
-import 'home/home_screen.dart';
-import 'play_session/play_session_screen.dart';
-import 'settings/settings_screen.dart';
+import 'features/player_progress/score.dart';
+import 'screens/level_selection/level_selection_screen.dart';
+import 'screens/level_selection/levels.dart';
+import 'screens/home/home_screen.dart';
+import 'screens/play_session/play_session_screen.dart';
+import 'screens/settings/settings_screen.dart';
 import 'style/my_transition.dart';
 import 'style/palette.dart';
-import 'win_game/win_game_screen.dart';
+import 'screens/win_game/win_game_screen.dart';
 
 /// The router describes the game's navigational hierarchy, from the main
 /// screen through settings screens all the way to each individual level.

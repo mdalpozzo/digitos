@@ -4,7 +4,7 @@
 
 import 'dart:developer' as dev;
 
-import 'package:digitos/game_screen/game_view_model.dart';
+import 'package:digitos/screens/game_screen/game_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,9 +13,9 @@ import 'package:provider/provider.dart';
 
 import 'app_lifecycle/app_lifecycle.dart';
 import 'audio/audio_controller.dart';
-import 'player_progress/player_progress.dart';
+import 'features/player_progress/player_progress.dart';
 import 'router.dart';
-import 'settings/settings.dart';
+import 'screens/settings/settings.dart';
 import 'style/palette.dart';
 
 import 'package:firebase_core/firebase_core.dart';
