@@ -3,6 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:digitos/screens/game_screen/game_screen.dart';
+import 'package:digitos/screens/login/login_screen.dart';
+import 'package:digitos/screens/register/register.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -89,6 +91,15 @@ final router = GoRouter(
           path: 'settings',
           builder: (context, state) =>
               const SettingsScreen(key: Key('settings')),
+        ),
+        GoRoute(
+          path: 'login',
+          builder: (context, state) => const LoginScreen(key: Key('login')),
+        ),
+        GoRoute(
+          path: 'register',
+          builder: (context, state) =>
+              const RegisterScreen(key: Key('register')),
         ),
       ],
     ),

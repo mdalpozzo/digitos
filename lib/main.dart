@@ -5,6 +5,10 @@
 import 'dart:developer' as dev;
 
 import 'package:digitos/screens/game_screen/game_view_model.dart';
+import 'package:digitos/services/account_service.dart';
+import 'package:digitos/services/auth_service/auth_app_wrapper.dart';
+import 'package:digitos/services/auth_service/auth_service.dart';
+import 'package:digitos/users/user_session_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,6 +67,21 @@ class MyApp extends StatelessWidget {
         // `context.watch()` or `context.read()`.
         // See `lib/main_menu/main_menu_screen.dart` for example usage.
         providers: [
+          Provider<AuthService>(
+            create: (_) => AuthService(),
+            lazy: false,
+          ),
+          Provider<AccountService>(
+            create: (context) => AccountService(context.read<AuthService>()),
+            lazy: false,
+          ),
+          Provider<UserSessionManager>(
+            create: (context) => UserSessionManager(
+              context.read<AuthService>(),
+              context.read<AccountService>(),
+            ),
+            lazy: false,
+          ),
           Provider(create: (context) => SettingsController()),
           Provider(create: (context) => Palette()),
           ChangeNotifierProvider(create: (context) => PlayerProgress()),
@@ -83,31 +102,33 @@ class MyApp extends StatelessWidget {
         child: Builder(builder: (context) {
           final palette = context.watch<Palette>();
 
-          return MaterialApp.router(
-            title: 'My Flutter Game',
-            theme: ThemeData.from(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: palette.darkPen,
-                background: palette.backgroundMain,
-              ),
-              textTheme: TextTheme(
-                bodyMedium: TextStyle(color: palette.ink),
-              ),
-              useMaterial3: true,
-            ).copyWith(
-              // Make buttons more fun.
-              filledButtonTheme: FilledButtonThemeData(
-                style: FilledButton.styleFrom(
-                  textStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
+          return AuthAppWrapper(
+            child: MaterialApp.router(
+              title: 'My Flutter Game',
+              theme: ThemeData.from(
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: palette.darkPen,
+                  background: palette.backgroundMain,
+                ),
+                textTheme: TextTheme(
+                  bodyMedium: TextStyle(color: palette.ink),
+                ),
+                useMaterial3: true,
+              ).copyWith(
+                // Make buttons more fun.
+                filledButtonTheme: FilledButtonThemeData(
+                  style: FilledButton.styleFrom(
+                    textStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
               ),
+              routeInformationProvider: router.routeInformationProvider,
+              routeInformationParser: router.routeInformationParser,
+              routerDelegate: router.routerDelegate,
             ),
-            routeInformationProvider: router.routeInformationProvider,
-            routeInformationParser: router.routeInformationParser,
-            routerDelegate: router.routerDelegate,
           );
         }),
       ),

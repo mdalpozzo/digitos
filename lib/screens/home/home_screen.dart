@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:digitos/services/account_service.dart';
+import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +21,12 @@ class HomeScreen extends StatelessWidget {
     final palette = context.watch<Palette>();
     final settingsController = context.watch<SettingsController>();
     final audioController = context.watch<AudioController>();
+    final authService = context.watch<AuthService>();
+    final accountService = context.watch<AccountService>();
+    // var gameData = accountService.currentGameData;
+    var currentUser = authService.currentUser;
+    var isAnonymous = currentUser?.isAnonymous ?? false;
+    var bestScore = accountService.currentGameData?.best;
 
     return Scaffold(
       backgroundColor: palette.backgroundMain,
@@ -47,6 +55,61 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           ResponsiveScreen(
+            topMessageArea: Stack(
+              children: [
+                // Centered "Best" text
+                Align(
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Best',
+                        style: TextStyle(
+                          fontFamily: 'Permanent Marker',
+                          fontSize: 20,
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      bestScore != null
+                          ? Text(bestScore.toString())
+                          : Text(
+                              '-',
+                              style: TextStyle(
+                                fontFamily: 'Permanent Marker',
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ],
+                  ),
+                ),
+                // Absolutely positioned login button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: currentUser == null || isAnonymous
+                      ? ElevatedButton(
+                          onPressed: () {
+                            GoRouter.of(context).go('/login');
+                          },
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              fontFamily: 'Permanent Marker',
+                              fontSize: 20,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          accountService.currentGameData?.displayName ?? '',
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: Colors.black,
+                          ),
+                        ),
+                ),
+              ],
+            ),
             squarishMainArea: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -88,18 +151,30 @@ class HomeScreen extends StatelessWidget {
                       audioController.playSfx(SfxType.buttonTap);
                       GoRouter.of(context).go('/game');
                     },
-                    child: Container(
-                      width: 100, // Adjust the size as needed
-                      height: 100, // Adjust the size as needed
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.play_arrow,
-                        size: 50,
-                        color: Colors.white,
-                      ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 100, // Adjust the size as needed
+                          height: 100, // Adjust the size as needed
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.play_arrow,
+                            size: 50,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          'Play',
+                          style: TextStyle(
+                            fontFamily: 'Permanent Marker',
+                            fontSize: 30,
+                            height: 1,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
