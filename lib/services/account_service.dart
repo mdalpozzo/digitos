@@ -5,22 +5,27 @@ import 'package:digitos/constants.dart';
 import 'package:digitos/models/game_data.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:digitos/services/base_service.dart';
+import 'package:digitos/services/data_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logging/logging.dart';
 
 class AccountService extends BaseService {
-  // TODO this should use the datastore abstraction service
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final AuthService _authService;
+  final AuthService authService;
+  final DataStore dataStore;
+
   final _log = Logger('AccountService');
 
   late final StreamSubscription<User?> _authSubscription;
 
-  AccountService(this._authService) {
+  AccountService({
+    required this.authService,
+    required this.dataStore,
+  }) {
     // Constructor injection of AuthService
 
     // Set up a listener for user authentication changes
-    _authSubscription = _authService.onAuthChanges.listen((user) {
+    _authSubscription = authService.onAuthChanges.listen((user) {
       loadGameData();
       // Additional actions if needed
     });
@@ -28,8 +33,32 @@ class AccountService extends BaseService {
 
   GameData? _currentGameData;
 
+  Future<void> createNewAccountInDB(String userId) async {
+    // TODO - create another method to DELETE an account in DB / this can be called where ever createNewAccountInDB is called for cases where anonymous account is being migrated to a permanent account
+    // check if account exists yet
+    DocumentSnapshot result =
+        await dataStore.getDocument(FirestorePaths.USERS_COLLECTION, userId);
+
+    if (!result.exists) {
+      _log.info('createNewAccountInDB: Creating new account for user $userId');
+      await dataStore.addDocument(
+        FirestorePaths.USERS_COLLECTION,
+        {
+          'displayName': '',
+          'isAnonymous': false,
+          'isPremium': false, // TODO
+          'lastLogin': DateTime.now(), // TODO update this on every login
+        },
+        documentId: userId,
+      );
+    } else {
+      _log.info(
+          'createNewAccountInDB: Account already exists for user $userId');
+    }
+  }
+
   Future<void> saveGameData(GameData gameData) async {
-    String userId = _authService.currentUser?.uid ?? "anonymous";
+    String userId = authService.currentUser?.uid ?? "anonymous";
     await _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(userId)
@@ -78,7 +107,7 @@ class AccountService extends BaseService {
   }
 
   Future<void> loadGameData() async {
-    String? userId = _authService.currentUser?.uid;
+    String? userId = authService.currentUser?.uid;
 
     if (userId == null) {
       // TODO Handle the case where there is no user ID
@@ -106,7 +135,7 @@ class AccountService extends BaseService {
   GameData? get currentGameData => _currentGameData;
 
   Future<void> addNewCompletedGame(String puzzleId, int moves) async {
-    String? userId = _authService.currentUser?.uid;
+    String? userId = authService.currentUser?.uid;
 
     if (userId == null) {
       // TODO Handle the case where there is no user ID
@@ -147,7 +176,7 @@ class AccountService extends BaseService {
   }
 
   Future<void> updateUserName(String newName) async {
-    String? userId = _authService.currentUser?.uid;
+    String? userId = authService.currentUser?.uid;
     // TODO enforce display name uniqueness
 
     if (userId == null) {

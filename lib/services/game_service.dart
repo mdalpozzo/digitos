@@ -1,15 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/constants.dart';
 import 'package:digitos/models/puzzle.dart';
+import 'package:digitos/services/base_service.dart';
 import 'package:digitos/services/data_store.dart';
 
-class GameService {
+class GameService extends BaseService {
+  final DataStore dataStore;
+
+  GameService({required this.dataStore});
+
   // Get a game configuration that hasn't been played by the user
   Future<Puzzle?> getNewGame(
     String userId, {
     List<String> excludedPuzzleIds = const [],
   }) async {
-    DocumentSnapshot userDoc = await DataStore().getDocument('users', userId);
+    DocumentSnapshot userDoc = await dataStore.getDocument('users', userId);
 
     // Fetch the list of played game configuration IDs for this user
     Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
@@ -20,7 +25,7 @@ class GameService {
 
     // Fetch an arbitrary game configuration excluding the played ones
     DocumentSnapshot<Object?>? newGameDoc =
-        await DataStore().getArbitraryDocumentExcludingIds(
+        await dataStore.getArbitraryDocumentExcludingIds(
       FirestorePaths.PUZZLE_COLLECTION,
       playedGameIds.toSet(),
     );
@@ -79,14 +84,15 @@ class GameService {
       }
 
       // Fetch the game parameters using the puzzle ID
-      DocumentSnapshot gameSnapshot = await DataStore()
-          .getDocument(FirestorePaths.PUZZLE_COLLECTION, puzzleId);
+      DocumentSnapshot gameSnapshot = await dataStore.getDocument(
+          FirestorePaths.PUZZLE_COLLECTION, puzzleId);
 
       if (!gameSnapshot.exists) {
         return null; // Puzzle not found in main collection
       }
 
-      Map<String, dynamic> gameData = gameSnapshot.data() as Map<String, dynamic>;
+      Map<String, dynamic> gameData =
+          gameSnapshot.data() as Map<String, dynamic>;
       gameData['id'] = gameSnapshot.id;
 
       return Puzzle.fromJson(gameData);

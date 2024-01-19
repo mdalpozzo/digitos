@@ -1,4 +1,4 @@
-import 'package:digitos/services/account_service.dart';
+import 'package:digitos/screens/register/register_view_model.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,8 +19,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final accountService = Provider.of<AccountService>(context, listen: false);
+    final registerViewModel =
+        Provider.of<RegisterViewModel>(context, listen: false);
+    BuildContext currentContext = context; // Capture the context
 
     return Scaffold(
       // appBar: AppBar(title: Text('Register')),
@@ -52,45 +53,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
+                  child: Text('Cancel'),
                   onPressed: () {
                     GoRouter.of(context).pop();
                   },
-                  child: Text('Cancel'),
                 ),
                 ElevatedButton(
+                  child: Text('Register'),
                   onPressed: () async {
                     String email = _emailController.text.trim();
                     String password = _passwordController.text.trim();
+
                     if (email.isNotEmpty && password.isNotEmpty) {
                       try {
-                        var oldUserId = authService.currentUser?.uid;
-
-                        await authService.createAccount(email, password);
-
-                        var newUserId = authService.currentUser?.uid;
-
-                        if (newUserId != null) {
-                          // sync anonymous game data
-                          await accountService
-                              .transferGameDataToPermanentAccount(newUserId, oldUserId);
-                        } else {
-                          // TODO handle can't sync anonymous game data error
-                          _log.warning(
-                              'New user id is null. Unable to sync anonymous game data.');
-                        }
+                        await registerViewModel.registerWithEmailAndPassword(
+                            email, password);
 
                         // Check if the widget is still mounted before calling setState or navigating
                         if (mounted) {
                           // TODO display confetti and transition to home screen
                           GoRouter.of(context).go('/');
                         }
-                        // TODO Handle successful registration
                       } catch (e) {
                         // TODO Handle errors or show error messages
+                        _log.severe('Error registering user: $e');
+
+                        if (e is AuthServiceError) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(currentContext).showSnackBar(
+                              SnackBar(
+                                content: Text(e.message),
+                              ),
+                            );
+                          }
+                        } else {
+                          if (mounted) {
+                            ScaffoldMessenger.of(currentContext).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'An error occurred. Please try again.'),
+                              ),
+                            );
+                          }
+                        }
                       }
                     }
                   },
-                  child: Text('Register'),
                 ),
               ],
             ),

@@ -5,9 +5,12 @@
 import 'dart:developer' as dev;
 
 import 'package:digitos/screens/game_screen/game_view_model.dart';
+import 'package:digitos/screens/register/register_view_model.dart';
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/auth_service/auth_app_wrapper.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
+import 'package:digitos/services/data_store.dart';
+import 'package:digitos/services/game_service.dart';
 import 'package:digitos/users/user_session_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -67,12 +70,25 @@ class MyApp extends StatelessWidget {
         // `context.watch()` or `context.read()`.
         // See `lib/main_menu/main_menu_screen.dart` for example usage.
         providers: [
-          Provider<AuthService>(
-            create: (_) => AuthService(),
+          ChangeNotifierProvider<DataStore>(
+            create: (_) => DataStore(),
+            lazy: false,
+          ),
+          ChangeNotifierProvider<AuthService>(
+            create: (context) => AuthService(dataStore: context.read<DataStore>()),
             lazy: false,
           ),
           ChangeNotifierProvider<AccountService>(
-            create: (context) => AccountService(context.read<AuthService>()),
+            create: (context) => AccountService(
+              authService: context.read<AuthService>(),
+              dataStore: context.read<DataStore>(),
+            ),
+            lazy: false,
+          ),
+          ChangeNotifierProvider<GameService>(
+            create: (context) => GameService(
+              dataStore: context.read<DataStore>(),
+            ),
             lazy: false,
           ),
           Provider<UserSessionManager>(
@@ -98,8 +114,15 @@ class MyApp extends StatelessWidget {
             lazy: false,
           ),
           ChangeNotifierProvider(
+            create: (context) => RegisterViewModel(
+              authService: context.read<AuthService>(),
+              accountService: context.read<AccountService>(),
+            ),
+          ),
+          ChangeNotifierProvider(
             create: (context) => GameViewModel(
               accountService: context.read<AccountService>(),
+              gameService: context.read<GameService>(),
             ),
           ),
         ],

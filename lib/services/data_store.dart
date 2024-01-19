@@ -1,22 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:digitos/services/base_service.dart';
 
-class DataStore {
+class DataStore extends BaseService {
   // Private instance of the Cloud Firestore client
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Singleton instance
-  static final DataStore _singleton = DataStore._internal();
-
-  // Factory constructor
-  factory DataStore() {
-    return _singleton;
-  }
-
-  // Internal constructor
-  DataStore._internal();
-
   // Method to add a document to a collection
-  Future<void> addDocument(String collection, Map<String, dynamic> data, {String? documentId}) async {
+  Future<void> addDocument(String collection, Map<String, dynamic> data,
+      {String? documentId}) async {
     if (documentId != null) {
       await _firestore.collection(collection).doc(documentId).set(data);
       return;

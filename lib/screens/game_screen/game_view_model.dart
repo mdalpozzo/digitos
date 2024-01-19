@@ -17,8 +17,12 @@ class OperationResult {
 
 class GameViewModel with ChangeNotifier {
   final AccountService accountService;
+  final GameService gameService;
 
-  GameViewModel({required this.accountService});
+  GameViewModel({
+    required this.accountService,
+    required this.gameService,
+  });
 
   String error = '';
   Puzzle? puzzle;
@@ -32,7 +36,7 @@ class GameViewModel with ChangeNotifier {
   bool puzzleSolved = false;
 
   void initDailyPuzzle() async {
-    Puzzle? fetchedPuzzle = await GameService().getDailyPuzzle();
+    Puzzle? fetchedPuzzle = await gameService.getDailyPuzzle();
 
     if (fetchedPuzzle == null) {
       // TODO handle error
@@ -139,7 +143,7 @@ class GameViewModel with ChangeNotifier {
   }
 
   void startNewGame() async {
-    Puzzle? newGame = await GameService().getNewGame(
+    Puzzle? newGame = await gameService.getNewGame(
       'userId',
       excludedPuzzleIds: [puzzle?.id ?? ''],
     );

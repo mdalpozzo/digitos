@@ -1,14 +1,25 @@
 import 'package:digitos/constants.dart';
+import 'package:digitos/services/base_service.dart';
 import 'package:digitos/services/data_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logging/logging.dart';
 
-class AuthService {
+class AuthServiceError {
+  final String message;
+  final String code;
+
+  AuthServiceError({
+    required this.message,
+    required this.code,
+  });
+}
+
+class AuthService extends BaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final DataStore _dataStore = DataStore();
+  final DataStore dataStore;
   static final _log = Logger('AuthService');
 
-  AuthService() {
+  AuthService({required this.dataStore}) {
     // Automatically create an anonymous account if no user is logged in.
     _init();
   }
@@ -36,17 +47,6 @@ class AuthService {
           'signInAnonymously: Anonymous user ID is null, could not create anonymous user data');
       return userCred;
     }
-
-    // Create a new user document in Firestore
-    await _dataStore.addDocument(
-      FirestorePaths.USERS_COLLECTION,
-      {
-        'isAnonymous': true,
-        'isPremium': false, // TODO
-        'lastLogin': DateTime.now(), // TODO update this on every login
-      },
-      documentId: anonymousUid,
-    );
 
     return userCred;
   }
@@ -80,15 +80,72 @@ class AuthService {
   }
 
   // Method to handle new account creation
-  Future<void> createAccount(String email, String password) async {
+  Future<UserCredential> createAccount(String email, String password) async {
     if (_firebaseAuth.currentUser?.isAnonymous ?? false) {
       // Link anonymous account data to the new account
-      await linkAnonymousAccountToEmailAndPassword(email, password);
+      try {
+        return await linkAnonymousAccountToEmailAndPassword(email, password);
+      } catch (e) {
+        if (e is FirebaseAuthException) {
+          _log.severe("FirebaseAuth error: ${e.code}");
+          if (e.code == "email-already-in-use") {
+            throw AuthServiceError(
+              message:
+                  "Email is already in use. Please choose a different email.",
+              code: e.code,
+            );
+          } else if (e.code == "user-not-found") {
+            return await _createNewUserWithEmailAndPassword(email, password);
+          } else {
+            throw AuthServiceError(
+              message: "An error occurred: ${e.message}",
+              code: e.code,
+            );
+          }
+        } else {
+          // Handle other non-FirebaseAuth errors
+          _log.severe("An error occurred: $e");
+          throw AuthServiceError(
+            message: "An error occurred: $e",
+            code: "unknown",
+          );
+        }
+      }
     } else {
-      await _firebaseAuth.createUserWithEmailAndPassword(
+      return await _createNewUserWithEmailAndPassword(email, password);
+    }
+  }
+
+  Future<UserCredential> _createNewUserWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      return await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        _log.severe("FirebaseAuth error: ${e.code}");
+        if (e.code == "email-already-in-use") {
+          throw AuthServiceError(
+            message:
+                "Email is already in use. Please choose a different email.",
+            code: e.code,
+          );
+        } else {
+          throw AuthServiceError(
+            message: "An error occurred: ${e.message}",
+            code: e.code,
+          );
+        }
+      } else {
+        // Handle other non-FirebaseAuth errors
+        _log.severe("An error occurred: $e");
+        throw AuthServiceError(
+          message: "An error occurred: $e",
+          code: "unknown",
+        );
+      }
     }
   }
 
@@ -99,8 +156,9 @@ class AuthService {
     String? anonymousUserId = _firebaseAuth.currentUser?.uid;
 
     if (anonymousUserId != null) {
+      // TODO this should be handled in the account services or some other higher level service class so that auth service does not depend on datastore
       _log.info('Deleting anonymous account data for user $anonymousUserId');
-      await _dataStore.deleteDocument(
+      await dataStore.deleteDocument(
         FirestorePaths.USERS_COLLECTION,
         anonymousUserId,
       );
