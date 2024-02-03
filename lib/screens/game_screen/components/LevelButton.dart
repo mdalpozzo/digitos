@@ -5,6 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+class LevelConfigItem {
+  final String name;
+  final Color color;
+
+  LevelConfigItem({
+    required this.name,
+    required this.color,
+  });
+}
+
 class LevelButton extends StatelessWidget {
   const LevelButton({
     super.key,
@@ -13,17 +23,19 @@ class LevelButton extends StatelessWidget {
 
   final int level;
 
-  static const Map<int, String> levelNames = {
-    1: 'easy',
-    2: 'medium',
-    3: 'hard',
-    4: 'expert',
+  static Map<int, LevelConfigItem> levelsDisplayConfig = {
+    1: LevelConfigItem(name: 'easy', color: Colors.green),
+    2: LevelConfigItem(name: 'medium', color: Colors.orange),
+    3: LevelConfigItem(name: 'hard', color: Colors.red),
+    4: LevelConfigItem(name: 'expert', color: Colors.pink),
   };
 
   @override
   Widget build(BuildContext context) {
     final audioController = context.watch<AudioController>();
     final gameViewModel = Provider.of<GameViewModel>(context);
+
+    LevelConfigItem? levelConfig = levelsDisplayConfig[level];
 
     return InkWell(
       onTap: () {
@@ -55,10 +67,11 @@ class LevelButton extends StatelessWidget {
               fontFamily: 'Permanent Marker',
               fontSize: 60,
               height: 1,
+              color: levelConfig?.color ?? Colors.black,
             ),
           ),
           Text(
-            levelNames[level] ?? 'unknown',
+            levelConfig?.name ?? 'unknown',
             style: TextStyle(
               fontFamily: 'Permanent Marker',
               fontSize: 26,
