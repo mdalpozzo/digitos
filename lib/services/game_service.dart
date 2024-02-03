@@ -29,7 +29,7 @@ class GameService extends BaseService {
 
     // Fetch an arbitrary game configuration excluding the played ones
     DocumentSnapshot<Object?>? newGameDoc =
-        await dataStore.getArbitraryDocumentExcludingIds(
+        await dataStore.getArbitraryPuzzleExcludingIds(
       FirestorePaths.PUZZLE_COLLECTION,
       playedGameIds.toSet(),
     );
