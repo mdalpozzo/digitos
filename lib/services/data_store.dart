@@ -47,7 +47,9 @@ class DataStore extends BaseService {
 
   // Retrieve an arbitrary document that doesn't match the provided set of documentIds
   Future<DocumentSnapshot?> getArbitraryPuzzleExcludingIds(
-      String collection, Set<String> excludedIds) async {
+    String collection,
+    Set<String> excludedIds,
+  ) async {
     _log.info(
         'DataStore.getArbitraryPuzzleExcludingIds: $collection, $excludedIds');
 
@@ -88,6 +90,8 @@ class DataStore extends BaseService {
     if (result.docs.isNotEmpty) {
       return result.docs.first;
     } else {
+      _log.warning('No puzzles found for difficulty: $difficulty');
+
       return null;
     }
   }
