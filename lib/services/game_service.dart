@@ -7,6 +7,9 @@ import 'package:digitos/services/data_store.dart';
 class GameService extends BaseService {
   final DataStore dataStore;
 
+  // games user has seen in current app session
+  List<String> seenGameIds = [];
+
   GameService({required this.dataStore});
 
   // Get a game configuration that hasn't been played by the user
@@ -22,6 +25,7 @@ class GameService extends BaseService {
         ? List<String>.from(userData['gamesCompleted'] ?? [])
         : [];
     playedGameIds.addAll(excludedPuzzleIds);
+    playedGameIds.addAll(seenGameIds);
 
     // Fetch an arbitrary game configuration excluding the played ones
     DocumentSnapshot<Object?>? newGameDoc =
@@ -36,6 +40,8 @@ class GameService extends BaseService {
 
     if (newGameData != null) {
       Puzzle gameParameters = Puzzle.fromJson(newGameData);
+      seenGameIds.add(gameParameters.id);
+
       return gameParameters;
     }
 
@@ -79,13 +85,16 @@ class GameService extends BaseService {
 
       String? puzzleId =
           dailyPuzzleRef[FirestorePaths.DAILY_PUZZLE_ID_FIELD] as String?;
+
       if (puzzleId == null) {
         return null; // No featured puzzles found
       }
 
       // Fetch the game parameters using the puzzle ID
       DocumentSnapshot gameSnapshot = await dataStore.getDocument(
-          FirestorePaths.PUZZLE_COLLECTION, puzzleId);
+        FirestorePaths.PUZZLE_COLLECTION,
+        puzzleId,
+      );
 
       if (!gameSnapshot.exists) {
         return null; // Puzzle not found in main collection
@@ -94,6 +103,7 @@ class GameService extends BaseService {
       Map<String, dynamic> gameData =
           gameSnapshot.data() as Map<String, dynamic>;
       gameData['id'] = gameSnapshot.id;
+      seenGameIds.add(gameSnapshot.id);
 
       return Puzzle.fromJson(gameData);
     } catch (e) {
