@@ -38,7 +38,9 @@ class RegisterViewModel with ChangeNotifier {
       if (newUserId != null) {
         // sync anonymous game data
         await accountService.transferGameDataToPermanentAccount(
-            newUserId, oldUserId);
+          newUserId,
+          oldUserId,
+        );
       } else {
         // TODO handle can't sync anonymous game data error
         _log.warning(

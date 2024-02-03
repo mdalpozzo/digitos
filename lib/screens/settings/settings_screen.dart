@@ -24,6 +24,7 @@ class SettingsScreen extends StatelessWidget {
     final settings = context.watch<SettingsController>();
     final palette = context.watch<Palette>();
     final accountService = context.watch<AccountService>();
+    String displayName = accountService.currentGameData?.displayName ?? '';
 
     return Scaffold(
       backgroundColor: palette.backgroundSettings,
@@ -43,7 +44,7 @@ class SettingsScreen extends StatelessWidget {
             _gap,
             _NameChangeLine(
               'Name',
-              accountService.currentGameData?.displayName,
+              displayName.isNotEmpty ? displayName : '--',
             ),
             ValueListenableBuilder<bool>(
               valueListenable: settings.soundsOn,

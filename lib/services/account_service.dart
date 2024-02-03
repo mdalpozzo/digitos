@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logging/logging.dart';
 
 class AccountService extends BaseService {
+  // TODO - should use the data store not _firestore directly
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AuthService authService;
   final DataStore dataStore;
@@ -22,6 +23,7 @@ class AccountService extends BaseService {
     required this.authService,
     required this.dataStore,
   }) {
+    _log.info('AccountService.constructor - instantiating');
     // Constructor injection of AuthService
 
     // Set up a listener for user authentication changes
@@ -33,7 +35,11 @@ class AccountService extends BaseService {
 
   GameData? _currentGameData;
 
-  Future<void> createNewAccountInDB(String userId) async {
+  Future<void> createNewAccountInDB(
+    String userId, {
+    bool? isAnonymous = false,
+  }) async {
+    _log.info('AccountService.createNewAccountInDB');
     // TODO - create another method to DELETE an account in DB / this can be called where ever createNewAccountInDB is called for cases where anonymous account is being migrated to a permanent account
     // check if account exists yet
     DocumentSnapshot result =
@@ -45,7 +51,7 @@ class AccountService extends BaseService {
         FirestorePaths.USERS_COLLECTION,
         {
           'displayName': '',
-          'isAnonymous': false,
+          'isAnonymous': isAnonymous,
           'isPremium': false, // TODO
           'lastLogin': DateTime.now(), // TODO update this on every login
         },
@@ -58,6 +64,7 @@ class AccountService extends BaseService {
   }
 
   Future<void> saveGameData(GameData gameData) async {
+    _log.info('AccountService.saveGameData');
     String userId = authService.currentUser?.uid ?? "anonymous";
     await _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
@@ -72,14 +79,22 @@ class AccountService extends BaseService {
     String newUserId,
     String? oldUserId,
   ) async {
+    _log.info('AccountService.transferGameDataToPermanentAccount');
     if (newUserId == oldUserId) {
-      // Nothing to do
+      // Only update the isAnonymous flag
+      await _firestore
+          .collection(FirestorePaths.USERS_COLLECTION)
+          .doc(newUserId)
+          .update({
+        'isAnonymous': false,
+      });
+
       _log.info(
           'transferGameDataToPermanentAccount: Old uid and new uid are the same, no need to migrate data.');
       return;
     }
 
-    // Fetch game data from anonymous account
+    // Fetch game data from old account
     DocumentSnapshot oldUserData = await _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(oldUserId)
@@ -107,6 +122,7 @@ class AccountService extends BaseService {
   }
 
   Future<void> loadGameData() async {
+    _log.info('AccountService.loadGameData: Loading game data');
     String? userId = authService.currentUser?.uid;
 
     if (userId == null) {
@@ -135,6 +151,7 @@ class AccountService extends BaseService {
   GameData? get currentGameData => _currentGameData;
 
   Future<void> addNewCompletedGame(String puzzleId, int moves) async {
+    _log.info('AccountService.addNewCompletedGame');
     String? userId = authService.currentUser?.uid;
 
     if (userId == null) {
@@ -172,10 +189,16 @@ class AccountService extends BaseService {
       'best': newBest,
     });
 
+    // TODO could be a more efficient way to do this to avoid extra reads
+    // proposal: move logic to the server side and use response to update local state
+    // Fetch the updated game data
+    await loadGameData();
+
     notifyListeners();
   }
 
   Future<void> updateUserName(String newName) async {
+    _log.info('AccountService.updateUserName');
     String? userId = authService.currentUser?.uid;
     // TODO enforce display name uniqueness
 

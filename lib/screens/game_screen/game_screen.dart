@@ -104,7 +104,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final gameViewModel = Provider.of<GameViewModel>(context);
-    final accountService = Provider.of<AccountService>(context);
+    final accountService = context.watch<AccountService>();
 
     List<NumberOption> options = gameViewModel.options;
     NumberOption? firstNumber = gameViewModel.firstNumber;
@@ -120,7 +120,10 @@ class _GameScreenState extends State<GameScreen> {
         secondNumber != null &&
         selectedOperation != null;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _showErrorDialog());
+    int? bestScore = accountService.currentGameData?.best;
+
+    // why?
+    // WidgetsBinding.instance.addPostFrameCallback((_) => _showErrorDialog());
 
     return options.isEmpty
         ? const Center(
@@ -206,9 +209,9 @@ class _GameScreenState extends State<GameScreen> {
                                         children: [
                                           const Text('Your Best: '),
                                           Text(
-                                            accountService.currentGameData?.best
-                                                    .toString() ??
-                                                '-',
+                                            bestScore == null
+                                                ? '-'
+                                                : bestScore.toString(),
                                           ),
                                         ],
                                       ),

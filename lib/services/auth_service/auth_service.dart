@@ -20,14 +20,33 @@ class AuthService extends BaseService {
   static final _log = Logger('AuthService');
 
   AuthService({required this.dataStore}) {
+    _log.info('AuthService.constructor');
     // Automatically create an anonymous account if no user is logged in.
     _init();
   }
 
   Future<void> _init() async {
-    if (_firebaseAuth.currentUser == null) {
-      await signInAnonymously();
-    }
+    _log.info('AuthService._init');
+    // if (_firebaseAuth.currentUser == null) {
+    //   await signInAnonymously();
+    // }
+
+    // Listen to authentication state changes
+    _firebaseAuth.authStateChanges().listen((user) {
+      // Make sure widgets rebuild when auth state changes
+      notifyListeners();
+
+      if (user != null) {
+        if (!user.isAnonymous) {
+          _log.info('Auth state changed: User logged in: ${user.toString()}');
+        } else {
+          _log.info(
+              'Auth state changed: Anonymous user logged in: ${user.toString()}');
+        }
+      } else {
+        _log.info('Auth state changed: User logged out');
+      }
+    });
   }
 
   // Stream to notify about authentication changes
@@ -38,6 +57,7 @@ class AuthService extends BaseService {
 
   // Method to sign in anonymously
   Future<UserCredential> signInAnonymously() async {
+    _log.info('AuthService.signInAnonymously');
     var userCred = await _firebaseAuth.signInAnonymously();
 
     String? anonymousUid = userCred.user?.uid;
@@ -53,6 +73,7 @@ class AuthService extends BaseService {
 
   // Method to sign out
   Future<void> signOut() async {
+    _log.info('AuthService.signOut');
     return await _firebaseAuth.signOut();
   }
 
@@ -61,6 +82,7 @@ class AuthService extends BaseService {
     String email,
     String password,
   ) async {
+    _log.info('AuthService.linkAnonymousAccountToEmailAndPassword');
     return await _firebaseAuth.currentUser!.linkWithCredential(
       EmailAuthProvider.credential(email: email, password: password),
     );
@@ -68,6 +90,7 @@ class AuthService extends BaseService {
 
   // Method to handle user login
   Future<void> loginUser(String email, String password) async {
+    _log.info('AuthService.loginUser');
     if (_firebaseAuth.currentUser?.isAnonymous ?? false) {
       // Handle anonymous account before logging in
       await _handleAnonymousAccount();
@@ -79,9 +102,11 @@ class AuthService extends BaseService {
     );
   }
 
-  // Method to handle new account creation
+  // Method to handle new account creation, links anonymous account to perm account or creates brand new from scratch
   Future<UserCredential> createAccount(String email, String password) async {
-    if (_firebaseAuth.currentUser?.isAnonymous ?? false) {
+    _log.info('AuthService.createAccount');
+    bool isAnonymous = _firebaseAuth.currentUser?.isAnonymous ?? false;
+    if (isAnonymous) {
       // Link anonymous account data to the new account
       try {
         return await linkAnonymousAccountToEmailAndPassword(email, password);
@@ -118,6 +143,7 @@ class AuthService extends BaseService {
 
   Future<UserCredential> _createNewUserWithEmailAndPassword(
       String email, String password) async {
+    _log.info('AuthService._createNewUserWithEmailAndPassword');
     try {
       return await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
@@ -151,7 +177,7 @@ class AuthService extends BaseService {
 
   // Handle anonymous account data before logging in or registering
   Future<void> _handleAnonymousAccount() async {
-    _log.info('Handling anonymous account');
+    _log.info('AuthService._handleAnonymousAccount');
     // TODO Implement logic to delete anonymous account data or port it to the new account
     String? anonymousUserId = _firebaseAuth.currentUser?.uid;
 

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
+// This widget is used to wrap the entire app and handle the creation of an
+// anonymous user if no user is currently logged in
 class AuthAppWrapper extends StatefulWidget {
   final Widget child;
 
@@ -33,25 +35,14 @@ class _AuthAppWrapperState extends State<AuthAppWrapper> {
 
       if (userId != null) {
         _log.info('initState: Anonymous user ID: $userId');
-        await accountService.createNewAccountInDB(userId);
+        await accountService.createNewAccountInDB(
+          userId,
+          isAnonymous: true,
+        );
       } else {
         _log.severe(
             'initState: Anonymous user ID is null, could not create anonymous user data');
       }
-
-      // Listen to authentication state changes
-      authService.onAuthChanges.listen((user) {
-        if (user != null) {
-          if (!user.isAnonymous) {
-            _log.info('Auth state changed: User logged in: ${user.toString()}');
-          } else {
-            _log.info(
-                'Auth state changed: Anonymous user logged in: ${user.toString()}');
-          }
-        } else {
-          _log.info('Auth state changed: User logged out');
-        }
-      });
     });
   }
 
