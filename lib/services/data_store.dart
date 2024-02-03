@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:digitos/constants.dart';
 import 'package:digitos/services/base_service.dart';
 import 'package:logging/logging.dart';
 
@@ -47,14 +48,13 @@ class DataStore extends BaseService {
 
   // Retrieve an arbitrary document that doesn't match the provided set of documentIds
   Future<DocumentSnapshot?> getArbitraryPuzzleExcludingIds(
-    String collection,
     Set<String> excludedIds,
   ) async {
     _log.info(
-        'DataStore.getArbitraryPuzzleExcludingIds: $collection, $excludedIds');
+        'DataStore.getArbitraryPuzzleExcludingIds: excludedPuzzles: $excludedIds');
 
     Query query = _firestore
-        .collection(collection)
+        .collection(FirestorePaths.PUZZLE_COLLECTION)
         .where(FieldPath.documentId, whereNotIn: excludedIds);
 
     // Fetch the documents and take the first one
@@ -68,21 +68,15 @@ class DataStore extends BaseService {
   }
 
   // Retrieve an arbitrary document from a difficulty level
-  Future<DocumentSnapshot?> getPuzzleByDifficulty(
-    String collection,
-    String difficulty,
-  ) async {
-    _log.info('DataStore.getPuzzleByDifficulty: $collection, $difficulty');
-
-    int? difficultyInt = int.tryParse(difficulty);
-
-    if (difficultyInt == null) {
-      return await getArbitraryPuzzleExcludingIds(collection, {});
-    }
+  Future<DocumentSnapshot?> getPuzzleByDifficulty({
+    required int difficulty,
+    required Set<String> excludedIds,
+  }) async {
+    _log.info('DataStore.getPuzzleByDifficulty: difficulty: $difficulty');
 
     Query query = _firestore
-        .collection(collection)
-        .where('difficulty', isEqualTo: difficultyInt);
+        .collection(FirestorePaths.PUZZLE_COLLECTION)
+        .where('difficulty', isEqualTo: difficulty);
 
     // Fetch the documents and take the first one
     QuerySnapshot result = await query.limit(1).get();

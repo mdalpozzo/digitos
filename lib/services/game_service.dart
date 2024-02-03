@@ -16,6 +16,7 @@ class GameService extends BaseService {
   Future<Puzzle?> getNewGame(
     String userId, {
     List<String> excludedPuzzleIds = const [],
+    int? difficulty,
   }) async {
     DocumentSnapshot userDoc = await dataStore.getDocument('users', userId);
 
@@ -27,26 +28,47 @@ class GameService extends BaseService {
     playedGameIds.addAll(excludedPuzzleIds);
     playedGameIds.addAll(seenGameIds);
 
-    // Fetch an arbitrary game configuration excluding the played ones
-    DocumentSnapshot<Object?>? newGameDoc =
-        await dataStore.getArbitraryPuzzleExcludingIds(
-      FirestorePaths.PUZZLE_COLLECTION,
-      playedGameIds.toSet(),
-    );
-    Map<String, dynamic>? newGameData =
-        newGameDoc?.data() as Map<String, dynamic>?;
+    if (difficulty != null) {
+      // Fetch an arbitrary game configuration excluding the played ones
+      DocumentSnapshot<Object?>? newGameDoc =
+          await dataStore.getPuzzleByDifficulty(
+        excludedIds: playedGameIds.toSet(),
+        difficulty: difficulty,
+      );
 
-    newGameData?['id'] = newGameDoc?.id;
+      Map<String, dynamic>? newGameData =
+          newGameDoc?.data() as Map<String, dynamic>?;
 
-    if (newGameData != null) {
-      Puzzle gameParameters = Puzzle.fromJson(newGameData);
-      seenGameIds.add(gameParameters.id);
+      newGameData?['id'] = newGameDoc?.id;
 
-      return gameParameters;
+      if (newGameData != null) {
+        Puzzle gameParameters = Puzzle.fromJson(newGameData);
+        seenGameIds.add(gameParameters.id);
+
+        return gameParameters;
+      }
+
+      // TODO handle error
+      return null;
+    } else {
+      // Fetch an arbitrary game configuration excluding the played ones
+      DocumentSnapshot<Object?>? newGameDoc =
+          await dataStore.getArbitraryPuzzleExcludingIds(playedGameIds.toSet());
+      Map<String, dynamic>? newGameData =
+          newGameDoc?.data() as Map<String, dynamic>?;
+
+      newGameData?['id'] = newGameDoc?.id;
+
+      if (newGameData != null) {
+        Puzzle gameParameters = Puzzle.fromJson(newGameData);
+        seenGameIds.add(gameParameters.id);
+
+        return gameParameters;
+      }
+
+      // TODO handle error
+      return null;
     }
-
-    // TODO handle error
-    return null;
   }
 
   Future<Puzzle?> getDailyPuzzle() async {

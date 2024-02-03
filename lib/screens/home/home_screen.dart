@@ -164,7 +164,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Play',
+                          'The Daily',
                           style: TextStyle(
                             fontFamily: 'Permanent Marker',
                             fontSize: 30,

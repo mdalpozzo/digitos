@@ -4,6 +4,7 @@ import 'package:digitos/models/number_option.dart';
 import 'package:digitos/models/puzzle.dart';
 import 'package:digitos/services/operations.dart';
 import 'package:digitos/services/game_service.dart';
+import 'package:logging/logging.dart';
 
 class OperationResult {
   final bool success;
@@ -18,6 +19,7 @@ class OperationResult {
 class GameViewModel with ChangeNotifier {
   final AccountService accountService;
   final GameService gameService;
+  final Logger _log = Logger('GameViewModel');
 
   GameViewModel({
     required this.accountService,
@@ -26,6 +28,7 @@ class GameViewModel with ChangeNotifier {
 
   String error = '';
   Puzzle? puzzle;
+  Puzzle? dailyPuzzle;
   List<NumberOption> options = [];
   NumberOption? firstNumber;
   NumberOption? secondNumber;
@@ -35,20 +38,33 @@ class GameViewModel with ChangeNotifier {
 
   bool puzzleSolved = false;
 
+  int _difficulty = 1;
+
+  int get difficulty => _difficulty;
+
+  void setDifficulty(int difficulty) {
+    _difficulty = difficulty;
+  }
+
   void initDailyPuzzle() async {
     Puzzle? fetchedPuzzle = await gameService.getDailyPuzzle();
 
     if (fetchedPuzzle == null) {
       // TODO handle error
       error = 'No puzzle found';
+      _log.severe('GameViewModel.initDailyPuzzle: No daily puzzle found');
+
       notifyListeners();
       return;
     }
 
-    options = fetchedPuzzle.toOptions();
-    puzzle = fetchedPuzzle;
-    error = '';
+    setupPuzzle(fetchedPuzzle);
+
     notifyListeners();
+  }
+
+  void setPuzzleToDaily() {
+    setupPuzzle(dailyPuzzle!);
   }
 
   void selectNumber(NumberOption numberOption) {
@@ -98,7 +114,7 @@ class GameViewModel with ChangeNotifier {
       secondNumber = null;
       selectedOperation = null;
 
-      if (result == targetNumber) {
+      if (result == puzzle?.targetNumber) {
         puzzleSolved = true;
         _handlePuzzleSolved(puzzle!);
       }
@@ -133,12 +149,13 @@ class GameViewModel with ChangeNotifier {
   }
 
   void resetGame() {
-    options = puzzle?.toOptions();
-    firstNumber = null;
-    secondNumber = null;
-    selectedOperation = null;
-    numberOfOperations = 0;
-    puzzleSolved = false;
+    Puzzle? p = puzzle;
+    if (p == null) {
+      _log.severe('GameViewModel.resetGame: No puzzle to reset');
+      return;
+    }
+
+    setupPuzzle(p);
     notifyListeners();
   }
 
@@ -146,17 +163,29 @@ class GameViewModel with ChangeNotifier {
     Puzzle? newGame = await gameService.getNewGame(
       'userId',
       excludedPuzzleIds: [puzzle?.id ?? ''],
+      difficulty: difficulty,
     );
 
     if (newGame != null) {
       puzzle = newGame;
-      options = newGame.toOptions();
-      targetNumber = newGame.targetNumber;
       resetGame();
     } else {
       // todo
       // Handle error
+      _log.severe('GameViewModel.startNewGame: No new game found');
     }
+  }
+
+  void setupPuzzle(Puzzle p) {
+    puzzle = p;
+    options = p.toOptions();
+    firstNumber = null;
+    secondNumber = null;
+    selectedOperation = null;
+    numberOfOperations = 0;
+    puzzleSolved = false;
+    error = '';
+    notifyListeners();
   }
 
   void _handlePuzzleSolved(Puzzle puzzle) async {
