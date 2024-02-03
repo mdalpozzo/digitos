@@ -1,5 +1,6 @@
 import 'package:digitos/audio/audio_controller.dart';
 import 'package:digitos/audio/sounds.dart';
+import 'package:digitos/screens/game_screen/game_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -7,21 +8,19 @@ import 'package:provider/provider.dart';
 class DailyButton extends StatelessWidget {
   const DailyButton({
     super.key,
-    required this.onConfirm,
-    required this.numberOfMoves,
   });
-
-  final void Function() onConfirm;
-  final int numberOfMoves;
 
   @override
   Widget build(BuildContext context) {
     final audioController = context.watch<AudioController>();
+    final gameViewModel = Provider.of<GameViewModel>(context);
 
     return InkWell(
       onTap: () {
         audioController.playSfx(SfxType.buttonTap);
-        // todo setdifficulty and go to game
+
+        gameViewModel.setPuzzleToDaily();
+
         GoRouter.of(context).go('/game');
       },
       child: Column(

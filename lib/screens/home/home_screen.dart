@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:digitos/screens/game_screen/components/DailyButton.dart';
+import 'package:digitos/screens/game_screen/components/LevelButton.dart';
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -112,7 +114,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Transform.rotate(
                         angle: -0.1,
@@ -143,36 +145,17 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      audioController.playSfx(SfxType.buttonTap);
-                      GoRouter.of(context).go('/game');
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 100, // Adjust the size as needed
-                          height: 100, // Adjust the size as needed
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.play_arrow,
-                            size: 50,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          'The Daily',
-                          style: TextStyle(
-                            fontFamily: 'Permanent Marker',
-                            fontSize: 30,
-                            height: 1,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: DailyButton(),
+                ),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: const [
+                      LevelButton(level: 1),
+                      LevelButton(level: 2),
+                      LevelButton(level: 3),
+                      LevelButton(level: 4),
+                    ],
                   ),
                 ),
               ],

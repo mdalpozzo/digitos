@@ -24,7 +24,9 @@ class GameViewModel with ChangeNotifier {
   GameViewModel({
     required this.accountService,
     required this.gameService,
-  });
+  }) {
+    initDailyPuzzle();
+  }
 
   String error = '';
   Puzzle? puzzle;
@@ -38,14 +40,6 @@ class GameViewModel with ChangeNotifier {
 
   bool puzzleSolved = false;
 
-  int _difficulty = 1;
-
-  int get difficulty => _difficulty;
-
-  void setDifficulty(int difficulty) {
-    _difficulty = difficulty;
-  }
-
   void initDailyPuzzle() async {
     Puzzle? fetchedPuzzle = await gameService.getDailyPuzzle();
 
@@ -58,7 +52,7 @@ class GameViewModel with ChangeNotifier {
       return;
     }
 
-    setupPuzzle(fetchedPuzzle);
+    dailyPuzzle = fetchedPuzzle;
 
     notifyListeners();
   }
@@ -159,10 +153,11 @@ class GameViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void startNewGame() async {
+  void startNewGame({int? difficulty}) async {
+    String? puzzleId = puzzle?.id;
     Puzzle? newGame = await gameService.getNewGame(
       'userId',
-      excludedPuzzleIds: [puzzle?.id ?? ''],
+      excludedPuzzleIds: puzzleId != null ? [puzzleId] : const [],
       difficulty: difficulty,
     );
 
