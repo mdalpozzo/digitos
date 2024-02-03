@@ -131,7 +131,7 @@ class MyApp extends StatelessWidget {
 
           return AuthAppWrapper(
             child: MaterialApp.router(
-              title: 'My Flutter Game',
+              title: 'Digitos',
               theme: ThemeData.from(
                 colorScheme: ColorScheme.fromSeed(
                   seedColor: palette.darkPen,

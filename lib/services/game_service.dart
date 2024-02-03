@@ -8,23 +8,24 @@ class GameService extends BaseService {
   final DataStore dataStore;
 
   // games user has seen in current app session
-  List<String> seenGameIds = [];
+  Set<String> seenGameIds = {};
 
   GameService({required this.dataStore});
 
   // Get a game configuration that hasn't been played by the user
   Future<Puzzle?> getNewGame(
     String userId, {
-    List<String> excludedPuzzleIds = const [],
+    Set<String> excludedPuzzleIds = const {},
     int? difficulty,
   }) async {
     DocumentSnapshot userDoc = await dataStore.getDocument('users', userId);
 
     // Fetch the list of played game configuration IDs for this user
     Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
-    List<String>? playedGameIds = userData != null
-        ? List<String>.from(userData['gamesCompleted'] ?? [])
-        : [];
+    Set<String>? playedGameIds = userData != null
+        ? Set<String>.from(userData['gamesCompleted'] ?? <String>{})
+        : <String>{};
+
     playedGameIds.addAll(excludedPuzzleIds);
     playedGameIds.addAll(seenGameIds);
 
@@ -32,7 +33,7 @@ class GameService extends BaseService {
       // Fetch an arbitrary game configuration excluding the played ones
       DocumentSnapshot<Object?>? newGameDoc =
           await dataStore.getPuzzleByDifficulty(
-        excludedIds: playedGameIds.toSet(),
+        excludedIds: playedGameIds.take(10).toSet(),
         difficulty: difficulty,
       );
 
