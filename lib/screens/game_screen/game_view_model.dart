@@ -154,10 +154,8 @@ class GameViewModel with ChangeNotifier {
   }
 
   void startNewGame({int? difficulty}) async {
-    String? puzzleId = puzzle?.id;
     Puzzle? newGame = await gameService.getNewGame(
       'userId',
-      excludedPuzzleIds: puzzleId != null ? [puzzleId] : const [],
       difficulty: difficulty,
     );
 

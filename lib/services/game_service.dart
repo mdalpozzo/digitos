@@ -15,7 +15,6 @@ class GameService extends BaseService {
   // Get a game configuration that hasn't been played by the user
   Future<Puzzle?> getNewGame(
     String userId, {
-    Set<String> excludedPuzzleIds = const {},
     int? difficulty,
   }) async {
     DocumentSnapshot userDoc = await dataStore.getDocument('users', userId);
@@ -26,7 +25,6 @@ class GameService extends BaseService {
         ? Set<String>.from(userData['gamesCompleted'] ?? <String>{})
         : <String>{};
 
-    playedGameIds.addAll(excludedPuzzleIds);
     playedGameIds.addAll(seenGameIds);
 
     if (difficulty != null) {
