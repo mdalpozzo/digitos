@@ -4,6 +4,7 @@
 
 import 'dart:developer' as dev;
 
+import 'package:digitos/config_manager.dart';
 import 'package:digitos/screens/game_screen/game_view_model.dart';
 import 'package:digitos/screens/register/register_view_model.dart';
 import 'package:digitos/services/account_service.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'app_lifecycle/app_lifecycle.dart';
 import 'audio/audio_controller.dart';
@@ -29,6 +31,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Put game into full screen mode on mobile devices.
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  // Lock the game to portrait mode on mobile devices.
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  ConfigManager().loadEnv();
+
   // Basic logging setup.
   Logger.root.level = kDebugMode ? Level.FINE : Level.INFO;
   Logger.root.onRecord.listen((record) {
@@ -39,15 +52,6 @@ void main() async {
       name: record.loggerName,
     );
   });
-
-  WidgetsFlutterBinding.ensureInitialized();
-  // Put game into full screen mode on mobile devices.
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-  // Lock the game to portrait mode on mobile devices.
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -75,7 +79,8 @@ class MyApp extends StatelessWidget {
             lazy: false,
           ),
           ChangeNotifierProvider<AuthService>(
-            create: (context) => AuthService(dataStore: context.read<DataStore>()),
+            create: (context) =>
+                AuthService(dataStore: context.read<DataStore>()),
             lazy: false,
           ),
           ChangeNotifierProvider<AccountService>(
