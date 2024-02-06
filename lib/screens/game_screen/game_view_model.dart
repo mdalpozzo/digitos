@@ -172,6 +172,7 @@ class GameViewModel with ChangeNotifier {
   void setupPuzzle(Puzzle p) {
     puzzle = p;
     options = p.toOptions();
+    targetNumber = p.targetNumber;
     firstNumber = null;
     secondNumber = null;
     selectedOperation = null;

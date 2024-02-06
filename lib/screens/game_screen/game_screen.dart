@@ -103,7 +103,7 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final gameViewModel = Provider.of<GameViewModel>(context);
+    final gameViewModel = context.watch<GameViewModel>();
     final accountService = context.watch<AccountService>();
 
     List<NumberOption> options = gameViewModel.options;
@@ -175,17 +175,11 @@ class _GameScreenState extends State<GameScreen> {
                               'Target',
                               style: Theme.of(context).textTheme.headlineLarge,
                             ),
-                            SizedBox(
-                              height: 80,
-                              width: 80,
+                            Expanded(
                               child: FittedBox(
                                 fit: BoxFit.fitWidth,
                                 child: Text(
                                   targetNumber.toString(),
-                                  // style: Theme.of(context)
-                                  //     .textTheme
-                                  //     .headlineLarge
-                                  //     ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
@@ -198,9 +192,7 @@ class _GameScreenState extends State<GameScreen> {
                               'Moves',
                               style: Theme.of(context).textTheme.headlineLarge,
                             ),
-                            SizedBox(
-                              height: 80,
-                              width: 80,
+                            Expanded(
                               child: FittedBox(
                                   fit: BoxFit.fitWidth,
                                   child: Column(
