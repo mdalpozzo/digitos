@@ -5,8 +5,8 @@
 import 'dart:developer' as dev;
 
 import 'package:digitos/config_manager.dart';
-import 'package:digitos/screens/game_screen/game_view_model.dart';
-import 'package:digitos/screens/register/register_view_model.dart';
+import 'package:digitos/view_models/game_view_model.dart';
+import 'package:digitos/view_models/register_view_model.dart';
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/auth_service/auth_app_wrapper.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';

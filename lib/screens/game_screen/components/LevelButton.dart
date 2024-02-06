@@ -1,6 +1,6 @@
 import 'package:digitos/audio/audio_controller.dart';
 import 'package:digitos/audio/sounds.dart';
-import 'package:digitos/screens/game_screen/game_view_model.dart';
+import 'package:digitos/view_models/game_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';

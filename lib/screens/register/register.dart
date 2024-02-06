@@ -1,4 +1,4 @@
-import 'package:digitos/screens/register/register_view_model.dart';
+import 'package:digitos/view_models/register_view_model.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
