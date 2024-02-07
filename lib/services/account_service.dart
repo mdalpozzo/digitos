@@ -65,10 +65,7 @@ class AccountService {
   Future<void> saveGameData(GameData gameData) async {
     _log.info('AccountService.saveGameData');
     String userId = authService.currentUser?.uid ?? "anonymous";
-    await _firestore
-        .collection(FirestorePaths.USERS_COLLECTION)
-        .doc(userId)
-        .set(gameData.toJson());
+    await dataStore.saveGameDataForUser(uid: userId, gameData: gameData);
 
     notifyListeners();
   }

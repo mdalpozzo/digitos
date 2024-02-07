@@ -1,4 +1,4 @@
-import 'package:digitos/screens/game_screen/game_view_model.dart';
+import 'package:digitos/view_models/game_view_model.dart';
 import 'package:digitos/models/number_option.dart';
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/operations.dart';
