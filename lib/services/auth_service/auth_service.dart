@@ -1,5 +1,4 @@
 import 'package:digitos/constants.dart';
-import 'package:digitos/services/base_service.dart';
 import 'package:digitos/services/data_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logging/logging.dart';
@@ -14,7 +13,7 @@ class AuthServiceError {
   });
 }
 
-class AuthService extends BaseService {
+class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final DataStore dataStore;
   static final _log = Logger('AuthService');
@@ -33,9 +32,6 @@ class AuthService extends BaseService {
 
     // Listen to authentication state changes
     _firebaseAuth.authStateChanges().listen((user) {
-      // Make sure widgets rebuild when auth state changes
-      notifyListeners();
-
       if (user != null) {
         if (!user.isAnonymous) {
           _log.info('Auth state changed: User logged in: ${user.toString()}');
@@ -49,7 +45,7 @@ class AuthService extends BaseService {
     });
   }
 
-  // Stream to notify about authentication changes
+  // Stream for listeners to authentication changes
   Stream<User?> get onAuthChanges => _firebaseAuth.authStateChanges();
 
   // Method to get the current user

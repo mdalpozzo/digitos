@@ -10,7 +10,6 @@ import 'package:digitos/view_models/register_view_model.dart';
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/auth_service/auth_app_wrapper.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
-import 'package:digitos/services/data_store.dart';
 import 'package:digitos/services/game_service.dart';
 import 'package:digitos/users/user_session_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -79,28 +78,28 @@ class MyApp extends StatelessWidget {
         // `context.watch()` or `context.read()`.
         // See `lib/main_menu/main_menu_screen.dart` for example usage.
         providers: [
-          ChangeNotifierProvider<DataStore>(
-            create: (_) => DataStore(),
-            lazy: false,
-          ),
-          ChangeNotifierProvider<AuthService>(
-            create: (context) =>
-                AuthService(dataStore: context.read<DataStore>()),
-            lazy: false,
-          ),
-          ChangeNotifierProvider<AccountService>(
-            create: (context) => AccountService(
-              authService: context.read<AuthService>(),
-              dataStore: context.read<DataStore>(),
-            ),
-            lazy: false,
-          ),
-          ChangeNotifierProvider<GameService>(
-            create: (context) => GameService(
-              dataStore: context.read<DataStore>(),
-            ),
-            lazy: false,
-          ),
+          // ChangeNotifierProvider<DataStore>(
+          //   create: (_) => DataStore(),
+          //   lazy: false,
+          // ),
+          // ChangeNotifierProvider<AuthService>(
+          //   create: (context) =>
+          //       AuthService(dataStore: context.read<DataStore>()),
+          //   lazy: false,
+          // ),
+          // ChangeNotifierProvider<AccountService>(
+          //   create: (context) => AccountService(
+          //     authService: context.read<AuthService>(),
+          //     dataStore: context.read<DataStore>(),
+          //   ),
+          //   lazy: false,
+          // ),
+          // ChangeNotifierProvider<GameService>(
+          //   create: (context) => GameService(
+          //     dataStore: context.read<DataStore>(),
+          //   ),
+          //   lazy: false,
+          // ),
           Provider<UserSessionManager>(
             create: (context) => UserSessionManager(
               context.read<AuthService>(),

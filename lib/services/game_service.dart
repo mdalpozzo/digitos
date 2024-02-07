@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/constants.dart';
 import 'package:digitos/models/puzzle.dart';
-import 'package:digitos/services/base_service.dart';
 import 'package:digitos/services/data_store.dart';
 
-class GameService extends BaseService {
+class GameService {
   final DataStore dataStore;
 
   // games user has seen in current app session

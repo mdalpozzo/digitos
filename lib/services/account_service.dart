@@ -4,12 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/constants.dart';
 import 'package:digitos/models/game_data.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
-import 'package:digitos/services/base_service.dart';
 import 'package:digitos/services/data_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logging/logging.dart';
 
-class AccountService extends BaseService {
+class AccountService {
   // TODO - should use the data store not _firestore directly
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AuthService authService;

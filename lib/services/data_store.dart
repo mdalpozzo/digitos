@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/constants.dart';
-import 'package:digitos/services/base_service.dart';
+import 'package:digitos/models/game_data.dart';
 import 'package:logging/logging.dart';
 
-class DataStore extends BaseService {
+class DataStore {
   // Private instance of the Cloud Firestore client
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _log = Logger('DataStore');
@@ -88,5 +88,15 @@ class DataStore extends BaseService {
 
       return null;
     }
+  }
+
+  Future<void> saveGameDataForUser({
+    required String uid,
+    required GameData gameData,
+  }) async {
+    await _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(uid)
+        .set(gameData.toJson());
   }
 }
