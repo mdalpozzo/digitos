@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'app_lifecycle/app_lifecycle.dart';
 import 'audio/audio_controller.dart';
@@ -28,9 +27,11 @@ import 'screens/settings/settings.dart';
 import 'style/palette.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
+  final _log = Logger('main');
+  _log.info('App start');
+
   WidgetsFlutterBinding.ensureInitialized();
   // Put game into full screen mode on mobile devices.
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -40,7 +41,11 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  ConfigManager().loadEnv();
+  try {
+    await ConfigManager().init();
+  } catch (err) {
+    _log.severe('Error loading environment vars', err);
+  }
 
   // Basic logging setup.
   Logger.root.level = kDebugMode ? Level.FINE : Level.INFO;
@@ -54,7 +59,7 @@ void main() async {
   });
 
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: ConfigManager().firebaseConfig.currentPlatform,
   );
 
   runApp(MyApp());
