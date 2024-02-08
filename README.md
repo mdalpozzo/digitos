@@ -1,19 +1,18 @@
 A starter Flutter project with a minimal shell of a game
 including the following features:
 
-- home screen
-- basic navigation
-- game-y theming
-- settings
-- sound
+-   home screen
+-   basic navigation
+-   game-y theming
+-   settings
+-   sound
 
 You can jump directly into building your game in `lib/play_session/`.
 
 When you're ready for things like ads, in-app purchases, achievements,
-analytics, crash reporting, and so on, 
+analytics, crash reporting, and so on,
 there are resources ready for you
 at [flutter.dev/games](https://flutter.dev/games).
-
 
 # Development
 
@@ -26,36 +25,21 @@ For example, you can run `flutter run -d macOS`, and get the same UI
 in a desktop window on a Mac. That way, you don't need to use a
 simulator/emulator or attach a mobile device.
 
-
 ## Code organization
 
-Code is organized in a loose and shallow feature-first fashion.
-In `lib/`, you'll therefore find directories such as `audio`,
-`main_menu` or `settings`. Nothing fancy, but usable.
+### MVVM
 
-```text
-lib
-├── app_lifecycle
-├── audio
-├── game_internals
-├── level_selection
-├── main_menu
-├── play_session
-├── player_progress
-├── settings
-├── style
-├── win_game
-│
-├── main.dart
-└── router.dart
-```
+### Services
 
-The state management approach is intentionally low-level. That way, it's easy to
-take this project and run with it, without having to learn new paradigms, or having
-to remember to run `flutter pub run build_runner watch`. You are,
-of course, encouraged to use whatever paradigm, helper package or code generation
-scheme that you prefer.
+Services are classes which centralize some aspect of the app logic or functionality in one place. They should be singletons and are managed by the ServiceLocator class. See `service_locator.dart`.
 
+### View Models
+
+TODO
+
+### Controllers
+
+TODO
 
 ## Building for production
 
@@ -88,9 +72,8 @@ your newly built web game to GitHub pages, assuming that you have
 that set up.
 
 Lastly, it is of course possible to build your game for desktop platforms:
-Windows, Linux and macOS. 
+Windows, Linux and macOS.
 Follow the [standard instructions](https://docs.flutter.dev/platform-integration/desktop).
-
 
 # Integrations
 
@@ -104,7 +87,6 @@ before you start any of the deeper integrations.
 [StackOverflow has instructions](https://stackoverflow.com/a/51550358/1416886)
 for this, and the [`rename`](https://pub.dev/packages/rename) tool
 (on pub.dev) automates the process.
-
 
 ## Audio
 
@@ -154,7 +136,7 @@ class ExampleClass {
 }
 ```
 
-When using Flutter DevTools, all the metadata of the log message is preserved, 
+When using Flutter DevTools, all the metadata of the log message is preserved,
 so you can filter by logger name, log level, and so on.
 
 Later, when you're closer to production, you can gather these log messages
@@ -163,18 +145,16 @@ when appropriate.
 See [`firebase_crashlytics`](https://pub.dev/packages/firebase_crashlytics)
 for more information.
 
-
 ## Settings
 
 The settings page is enabled by default, and accessible both
 from the home and through the "gear" button in the play session screen.
 
-Settings are saved to local storage using the 
+Settings are saved to local storage using the
 [`shared_preferences`](https://pub.dev/packages/shared_preferences)
 package.
 To change what preferences are saved and how, edit files in
 `lib/settings/persistence`.
-
 
 # Icon
 
@@ -189,7 +169,6 @@ dart run flutter_launcher_icons:main
 You can [configure](https://github.com/fluttercommunity/flutter_launcher_icons#book-guide)
 the look of the icon in the `flutter_icons:` section of `pubspec.yaml`.
 
-
 # Troubleshooting
 
 ## CocoaPods
@@ -201,22 +180,23 @@ a more thorough cleanup by running `flutter clean` instead.)
 
 If this doesn't help, here are some more methods:
 
-- See if everything is still okay with your Flutter and CocoaPods installation
-  by running `flutter doctor`. Revisit the macOS 
-  [Flutter installation guide](https://docs.flutter.dev/get-started/install/macos)
-  if needed.
-- Update CocoaPods specs directory:
+-   See if everything is still okay with your Flutter and CocoaPods installation
+    by running `flutter doctor`. Revisit the macOS
+    [Flutter installation guide](https://docs.flutter.dev/get-started/install/macos)
+    if needed.
+-   Update CocoaPods specs directory:
 
-  ```sh
-  cd ios
-  pod repo update
-  cd ..
-  ```
+    ```sh
+    cd ios
+    pod repo update
+    cd ..
+    ```
 
-  (Substitute `ios` for `macos` when appropriate.)
-- Open the project in Xcode, 
-  [increase the build target](https://stackoverflow.com/a/38602597/1416886),
-  then select _Product_ > _Clean Build Folder_.
+    (Substitute `ios` for `macos` when appropriate.)
+
+-   Open the project in Xcode,
+    [increase the build target](https://stackoverflow.com/a/38602597/1416886),
+    then select _Product_ > _Clean Build Folder_.
 
 ## Warnings in console
 
@@ -228,5 +208,5 @@ or
 
 > warning: 'viewState' was deprecated in macOS 11.0: Use -initWithState: instead
 
-These warning come from the various plugins that are used by the template. They are not harmful 
+These warning come from the various plugins that are used by the template. They are not harmful
 and can be ignored. The warnings are meant for the plugin authors, not for you, the game developer.

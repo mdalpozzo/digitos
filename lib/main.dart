@@ -5,6 +5,7 @@
 import 'dart:developer' as dev;
 
 import 'package:digitos/config_manager.dart';
+import 'package:digitos/service_locator.dart';
 import 'package:digitos/view_models/game_view_model.dart';
 import 'package:digitos/view_models/register_view_model.dart';
 import 'package:digitos/services/account_service.dart';
@@ -24,8 +25,6 @@ import 'features/player_progress/player_progress.dart';
 import 'router.dart';
 import 'screens/settings/settings.dart';
 import 'style/palette.dart';
-
-import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   final _log = Logger('main');
@@ -57,9 +56,15 @@ void main() async {
     );
   });
 
-  await Firebase.initializeApp(
-    options: ConfigManager().firebaseConfig.currentPlatform,
-  );
+  // ServiceLocator depends on ConfigManager init...
+  // TODO explicity enforce this relationship (currently implicitly enforced via "main" order of execution)
+  try {
+    await ServiceLocator.loadServices(
+      firebaseOptions: ConfigManager().firebaseConfig.currentPlatform,
+    );
+  } catch (err) {
+    _log.severe('Error loading services', err);
+  }
 
   runApp(MyApp());
 }

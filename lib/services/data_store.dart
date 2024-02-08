@@ -4,11 +4,10 @@ import 'package:digitos/models/game_data.dart';
 import 'package:logging/logging.dart';
 
 class DataStore {
-  // Private instance of the Cloud Firestore client
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore firestore;
   final _log = Logger('DataStore');
 
-  DataStore() {
+  DataStore({required this.firestore}) {
     _log.info('DataStore initialized');
   }
 
@@ -18,17 +17,17 @@ class DataStore {
     _log.info('DataStore.addDocument: $collection, $data, $documentId');
 
     if (documentId != null) {
-      await _firestore.collection(collection).doc(documentId).set(data);
+      await firestore.collection(collection).doc(documentId).set(data);
       return;
     }
-    await _firestore.collection(collection).add(data);
+    await firestore.collection(collection).add(data);
   }
 
   // Method to retrieve a document from a collection by its ID
   Future<DocumentSnapshot> getDocument(String collection, String docId) async {
     _log.info('DataStore.getDocument: $collection, $docId');
 
-    return await _firestore.collection(collection).doc(docId).get();
+    return await firestore.collection(collection).doc(docId).get();
   }
 
   // Method to update a document in a collection by its ID
@@ -36,14 +35,14 @@ class DataStore {
       String collection, String docId, Map<String, dynamic> data) async {
     _log.info('DataStore.updateDocument: $collection, $docId, $data');
 
-    await _firestore.collection(collection).doc(docId).update(data);
+    await firestore.collection(collection).doc(docId).update(data);
   }
 
   // Method to delete a document from a collection by its ID
   Future<void> deleteDocument(String collection, String docId) async {
     _log.info('DataStore.deleteDocument: $collection, $docId');
 
-    await _firestore.collection(collection).doc(docId).delete();
+    await firestore.collection(collection).doc(docId).delete();
   }
 
   // Retrieve an arbitrary document that doesn't match the provided set of documentIds
@@ -53,7 +52,7 @@ class DataStore {
     _log.info(
         'DataStore.getArbitraryPuzzleExcludingIds: excludedPuzzles: $excludedIds');
 
-    Query query = _firestore
+    Query query = firestore
         .collection(FirestorePaths.PUZZLE_COLLECTION)
         .where(FieldPath.documentId, whereNotIn: excludedIds);
 
@@ -74,7 +73,7 @@ class DataStore {
   }) async {
     _log.info('DataStore.getPuzzleByDifficulty: difficulty: $difficulty');
 
-    Query query = _firestore
+    Query query = firestore
         .collection(FirestorePaths.PUZZLE_COLLECTION)
         .where('difficulty', isEqualTo: difficulty);
 
@@ -94,7 +93,7 @@ class DataStore {
     required String uid,
     required GameData gameData,
   }) async {
-    await _firestore
+    await firestore
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(uid)
         .set(gameData.toJson());
