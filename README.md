@@ -146,6 +146,14 @@ This will show up in the console as:
 [Foo] Hello, world!
 ```
 
+In a class instantiate the logger as a static class member when possible so only a single instance of the logger exists for each class across all class instances.
+
+```dart
+class ExampleClass {
+  static final _log = Logger('ExampleClass');
+}
+```
+
 When using Flutter DevTools, all the metadata of the log message is preserved, 
 so you can filter by logger name, log level, and so on.
 

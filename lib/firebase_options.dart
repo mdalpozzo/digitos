@@ -14,18 +14,155 @@ import 'package:flutter/foundation.dart'
 ///   options: DefaultFirebaseOptions.currentPlatform,
 /// );
 /// ```
+///
+
+class FirebaseConfigParamsWeb {
+  String apiKey;
+  String appId;
+  String messagingSenderId;
+  String projectId;
+  String authDomain;
+  String databaseURL;
+  String storageBucket;
+  String measurementId;
+
+  FirebaseConfigParamsWeb({
+    required this.apiKey,
+    required this.appId,
+    required this.messagingSenderId,
+    required this.projectId,
+    required this.authDomain,
+    required this.databaseURL,
+    required this.storageBucket,
+    required this.measurementId,
+  });
+}
+
+class FirebaseConfigParamsAndroid {
+  String apiKey;
+  String appId;
+  String messagingSenderId;
+  String projectId;
+  String databaseURL;
+  String storageBucket;
+
+  FirebaseConfigParamsAndroid({
+    required this.apiKey,
+    required this.appId,
+    required this.messagingSenderId,
+    required this.projectId,
+    required this.databaseURL,
+    required this.storageBucket,
+  });
+}
+
+class FirebaseConfigParamsIos {
+  String apiKey;
+  String appId;
+  String messagingSenderId;
+  String projectId;
+  String databaseURL;
+  String storageBucket;
+  String iosClientId;
+  String iosBundleId;
+
+  FirebaseConfigParamsIos({
+    required this.apiKey,
+    required this.appId,
+    required this.messagingSenderId,
+    required this.projectId,
+    required this.databaseURL,
+    required this.storageBucket,
+    required this.iosClientId,
+    required this.iosBundleId,
+  });
+}
+
+class FirebaseConfigParamsMacos {
+  String apiKey;
+  String appId;
+  String messagingSenderId;
+  String projectId;
+  String databaseURL;
+  String storageBucket;
+  String iosBundleId;
+
+  FirebaseConfigParamsMacos({
+    required this.apiKey,
+    required this.appId,
+    required this.messagingSenderId,
+    required this.projectId,
+    required this.databaseURL,
+    required this.storageBucket,
+    required this.iosBundleId,
+  });
+}
+
 class DefaultFirebaseOptions {
-  static FirebaseOptions get currentPlatform {
+  late FirebaseOptions webOptions;
+  late FirebaseOptions androidOptions;
+  late FirebaseOptions iosOptions;
+  late FirebaseOptions macosOptions;
+
+  DefaultFirebaseOptions({
+    required FirebaseConfigParamsWeb web,
+    required FirebaseConfigParamsAndroid android,
+    required FirebaseConfigParamsIos ios,
+    required FirebaseConfigParamsMacos macos,
+  }) {
+    webOptions = FirebaseOptions(
+      apiKey: web.apiKey,
+      appId: web.appId,
+      messagingSenderId: web.messagingSenderId,
+      projectId: web.projectId,
+      authDomain: web.authDomain,
+      databaseURL: web.databaseURL,
+      storageBucket: web.storageBucket,
+      measurementId: web.measurementId,
+    );
+
+    androidOptions = FirebaseOptions(
+      apiKey: android.apiKey,
+      appId: android.appId,
+      messagingSenderId: android.messagingSenderId,
+      projectId: android.projectId,
+      databaseURL: android.databaseURL,
+      storageBucket: android.storageBucket,
+    );
+
+    iosOptions = FirebaseOptions(
+      apiKey: ios.apiKey,
+      appId: ios.appId,
+      messagingSenderId: ios.messagingSenderId,
+      projectId: ios.projectId,
+      databaseURL: ios.databaseURL,
+      storageBucket: ios.storageBucket,
+      iosClientId: ios.iosClientId,
+      iosBundleId: ios.iosBundleId,
+    );
+
+    macosOptions = FirebaseOptions(
+      apiKey: macos.apiKey,
+      appId: macos.appId,
+      messagingSenderId: macos.messagingSenderId,
+      projectId: macos.projectId,
+      databaseURL: macos.databaseURL,
+      storageBucket: macos.storageBucket,
+      iosBundleId: macos.iosBundleId,
+    );
+  }
+
+  FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      return webOptions;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        return androidOptions;
       case TargetPlatform.iOS:
-        return ios;
+        return iosOptions;
       case TargetPlatform.macOS:
-        return macos;
+        return macosOptions;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -42,45 +179,4 @@ class DefaultFirebaseOptions {
         );
     }
   }
-
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAgC43k0z5R0EAQM-so4hSI5owKDPMe_-k',
-    appId: '1:540649544846:web:42eb8960964a77b318bddf',
-    messagingSenderId: '540649544846',
-    projectId: 'digitos-2ba0b',
-    authDomain: 'digitos-2ba0b.firebaseapp.com',
-    databaseURL: 'https://digitos-2ba0b-default-rtdb.firebaseio.com',
-    storageBucket: 'digitos-2ba0b.appspot.com',
-    measurementId: 'G-0S34JC82HX',
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyANH9miWbWOW368glX4cKkWp_j5ZLWn_6E',
-    appId: '1:540649544846:android:e4d8c91fbe055f0718bddf',
-    messagingSenderId: '540649544846',
-    projectId: 'digitos-2ba0b',
-    databaseURL: 'https://digitos-2ba0b-default-rtdb.firebaseio.com',
-    storageBucket: 'digitos-2ba0b.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDHv1WrlCcJp8cN5RH7zQ0GsVaA6nL--a4',
-    appId: '1:540649544846:ios:cece2f96db63515d18bddf',
-    messagingSenderId: '540649544846',
-    projectId: 'digitos-2ba0b',
-    databaseURL: 'https://digitos-2ba0b-default-rtdb.firebaseio.com',
-    storageBucket: 'digitos-2ba0b.appspot.com',
-    iosClientId: '540649544846-8h14dr2hqbbnv56bbho5jo9gt4pt8tiq.apps.googleusercontent.com',
-    iosBundleId: 'com.digitos.digitos',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDHv1WrlCcJp8cN5RH7zQ0GsVaA6nL--a4',
-    appId: '1:540649544846:ios:9ffbe74175e0eee618bddf',
-    messagingSenderId: '540649544846',
-    projectId: 'digitos-2ba0b',
-    databaseURL: 'https://digitos-2ba0b-default-rtdb.firebaseio.com',
-    storageBucket: 'digitos-2ba0b.appspot.com',
-    iosBundleId: 'com.example.basic.RunnerTests',
-  );
 }
