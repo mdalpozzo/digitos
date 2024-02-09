@@ -5,12 +5,12 @@
 import 'dart:developer' as dev;
 
 import 'package:digitos/config_manager.dart';
+import 'package:digitos/service_locator.dart';
 import 'package:digitos/view_models/game_view_model.dart';
 import 'package:digitos/view_models/register_view_model.dart';
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/auth_service/auth_app_wrapper.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
-import 'package:digitos/services/data_store.dart';
 import 'package:digitos/services/game_service.dart';
 import 'package:digitos/users/user_session_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -25,8 +25,6 @@ import 'features/player_progress/player_progress.dart';
 import 'router.dart';
 import 'screens/settings/settings.dart';
 import 'style/palette.dart';
-
-import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   final _log = Logger('main');
@@ -58,9 +56,15 @@ void main() async {
     );
   });
 
-  await Firebase.initializeApp(
-    options: ConfigManager().firebaseConfig.currentPlatform,
-  );
+  // ServiceLocator depends on ConfigManager init...
+  // TODO explicity enforce this relationship (currently implicitly enforced via "main" order of execution)
+  try {
+    await ServiceLocator.loadServices(
+      firebaseOptions: ConfigManager().firebaseConfig.currentPlatform,
+    );
+  } catch (err) {
+    _log.severe('Error loading services', err);
+  }
 
   runApp(MyApp());
 }
@@ -79,28 +83,6 @@ class MyApp extends StatelessWidget {
         // `context.watch()` or `context.read()`.
         // See `lib/main_menu/main_menu_screen.dart` for example usage.
         providers: [
-          ChangeNotifierProvider<DataStore>(
-            create: (_) => DataStore(),
-            lazy: false,
-          ),
-          ChangeNotifierProvider<AuthService>(
-            create: (context) =>
-                AuthService(dataStore: context.read<DataStore>()),
-            lazy: false,
-          ),
-          ChangeNotifierProvider<AccountService>(
-            create: (context) => AccountService(
-              authService: context.read<AuthService>(),
-              dataStore: context.read<DataStore>(),
-            ),
-            lazy: false,
-          ),
-          ChangeNotifierProvider<GameService>(
-            create: (context) => GameService(
-              dataStore: context.read<DataStore>(),
-            ),
-            lazy: false,
-          ),
           Provider<UserSessionManager>(
             create: (context) => UserSessionManager(
               context.read<AuthService>(),

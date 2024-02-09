@@ -1,19 +1,16 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/constants.dart';
 import 'package:digitos/models/game_data.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
-import 'package:digitos/services/base_service.dart';
-import 'package:digitos/services/data_store.dart';
+import 'package:digitos/services/data_store/account_data_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logging/logging.dart';
 
-class AccountService extends BaseService {
-  // TODO - should use the data store not _firestore directly
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+// anything to do with account logic (auth is separate lower level service)
+class AccountService {
   final AuthService authService;
-  final DataStore dataStore;
+  final AccountDataStore accountDataStore;
 
   final _log = Logger('AccountService');
 
@@ -21,35 +18,30 @@ class AccountService extends BaseService {
 
   AccountService({
     required this.authService,
-    required this.dataStore,
+    required this.accountDataStore,
   }) {
     _log.info('AccountService.constructor - instantiating');
     // Constructor injection of AuthService
 
     // Set up a listener for user authentication changes
     _authSubscription = authService.onAuthChanges.listen((user) {
-      loadGameData();
+      // TODO probably need to consider the impact on the UX/UI or app logic given the async nature of this operation
+      loadAccountGameData();
       // Additional actions if needed
     });
   }
 
   GameData? _currentGameData;
 
-  Future<void> createNewAccountInDB(
-    String userId, {
-    bool? isAnonymous = false,
-  }) async {
-    _log.info('AccountService.createNewAccountInDB');
-    // TODO - create another method to DELETE an account in DB / this can be called where ever createNewAccountInDB is called for cases where anonymous account is being migrated to a permanent account
-    // check if account exists yet
-    DocumentSnapshot result =
-        await dataStore.getDocument(FirestorePaths.USERS_COLLECTION, userId);
-
-    if (!result.exists) {
+  Future<void> createNewAccountInDB(String userId,
+      {bool? isAnonymous = false}) async {
+    bool accountExists = await accountDataStore.documentExists(
+        FirestorePaths.USERS_COLLECTION, userId);
+    if (!accountExists) {
       _log.info('createNewAccountInDB: Creating new account for user $userId');
-      await dataStore.addDocument(
-        FirestorePaths.USERS_COLLECTION,
-        {
+      await accountDataStore.addDocument(
+        collection: FirestorePaths.USERS_COLLECTION,
+        data: {
           'displayName': '',
           'isAnonymous': isAnonymous,
           'isPremium': false, // TODO
@@ -64,14 +56,13 @@ class AccountService extends BaseService {
   }
 
   Future<void> saveGameData(GameData gameData) async {
-    _log.info('AccountService.saveGameData');
+    _log.info('saveGameData');
     String userId = authService.currentUser?.uid ?? "anonymous";
-    await _firestore
-        .collection(FirestorePaths.USERS_COLLECTION)
-        .doc(userId)
-        .set(gameData.toJson());
-
-    notifyListeners();
+    await accountDataStore.upsertDocument(
+      docId: userId,
+      data: gameData.toJson(),
+      collection: FirestorePaths.USERS_COLLECTION,
+    );
   }
 
   // Method to transfer game data from anonymous to permanent account
@@ -79,73 +70,28 @@ class AccountService extends BaseService {
     String newUserId,
     String? oldUserId,
   ) async {
-    _log.info('AccountService.transferGameDataToPermanentAccount');
-    if (newUserId == oldUserId) {
-      // Only update the isAnonymous flag
-      await _firestore
-          .collection(FirestorePaths.USERS_COLLECTION)
-          .doc(newUserId)
-          .update({
-        'isAnonymous': false,
-      });
-
-      _log.info(
-          'transferGameDataToPermanentAccount: Old uid and new uid are the same, no need to migrate data.');
-      return;
-    }
-
-    // Fetch game data from old account
-    DocumentSnapshot oldUserData = await _firestore
-        .collection(FirestorePaths.USERS_COLLECTION)
-        .doc(oldUserId)
-        .get();
-
-    if (oldUserData.exists) {
-      // Ensure the data is a Map<String, dynamic> before using it
-      Map<String, dynamic> data =
-          oldUserData.data() as Map<String, dynamic>? ?? {};
-
-      // Save the data to the new user ID
-      await _firestore
-          .collection(FirestorePaths.USERS_COLLECTION)
-          .doc(newUserId)
-          .set(data);
-
-      // Optionally delete the old data
-      await _firestore
-          .collection(FirestorePaths.USERS_COLLECTION)
-          .doc(oldUserId)
-          .delete();
-    }
-
-    notifyListeners();
+    _log.info('transferGameDataToPermanentAccount');
+    await accountDataStore.transferGameDataToPermanentAccount(
+        newUserId, oldUserId);
+    _log.info("Game data transferred successfully.");
   }
 
-  Future<void> loadGameData() async {
-    _log.info('AccountService.loadGameData: Loading game data');
+  Future<void> loadAccountGameData() async {
+    _log.info('AccountService.loadAccountGameData: Loading game data');
     String? userId = authService.currentUser?.uid;
 
     if (userId == null) {
-      // TODO Handle the case where there is no user ID
-      _log.severe('loadGameData: No user ID found');
-
+      _log.severe('loadAccountGameData: No user ID found');
       return;
     }
 
-    DocumentSnapshot snapshot = await _firestore
-        .collection(FirestorePaths.USERS_COLLECTION)
-        .doc(userId)
-        .get();
-
-    if (snapshot.exists && snapshot.data() != null) {
-      _currentGameData =
-          GameData.fromJson(snapshot.data() as Map<String, dynamic>);
+    GameData? gameData = await accountDataStore.loadGameData(userId);
+    if (gameData != null) {
+      _currentGameData = gameData;
     } else {
-      // TODO Handle the case where there is no existing game data
+      // no existing game data, use default game data
       _currentGameData = GameData();
     }
-
-    notifyListeners();
   }
 
   GameData? get currentGameData => _currentGameData;
@@ -181,20 +127,20 @@ class AccountService extends BaseService {
       newBest = moves;
     }
 
-    await _firestore
-        .collection(FirestorePaths.USERS_COLLECTION)
-        .doc(userId)
-        .update({
-      'gamesCompleted': newGamesCompleted.map((e) => e.toJson()).toList(),
-      'best': newBest,
-    });
+    await accountDataStore.updateGameData(
+      userId: userId,
+      data: {
+        'gamesCompleted': newGamesCompleted.map((e) => e.toJson()).toList(),
+        'best': newBest,
+      },
+    );
 
     // TODO could be a more efficient way to do this to avoid extra reads
     // proposal: move logic to the server side and use response to update local state
     // Fetch the updated game data
-    await loadGameData();
-
-    notifyListeners();
+    // OR
+    // return updated game data from accountDataStore.updateGameData and update local app state
+    await loadAccountGameData();
   }
 
   Future<void> updateUserName(String newName) async {
@@ -209,21 +155,15 @@ class AccountService extends BaseService {
       return;
     }
 
-    await _firestore
-        .collection(FirestorePaths.USERS_COLLECTION)
-        .doc(userId)
-        .update({
-      'displayName': newName,
-    });
+    await accountDataStore.updateDisplayName(
+      userId: userId,
+      displayName: newName,
+    );
 
     _currentGameData?.displayName = newName;
-
-    notifyListeners();
   }
 
-  @override
   void dispose() {
     _authSubscription.cancel();
-    super.dispose();
   }
 }

@@ -9,8 +9,6 @@ import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../audio/audio_controller.dart';
-import '../../audio/sounds.dart';
 import '../settings/settings.dart';
 import '../../style/palette.dart';
 import '../../style/responsive_screen.dart';
@@ -22,7 +20,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.watch<Palette>();
     final settingsController = context.watch<SettingsController>();
-    final audioController = context.watch<AudioController>();
     final authService = context.watch<AuthService>();
     final accountService = context.watch<AccountService>();
     // var gameData = accountService.currentGameData;
