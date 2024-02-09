@@ -83,28 +83,6 @@ class MyApp extends StatelessWidget {
         // `context.watch()` or `context.read()`.
         // See `lib/main_menu/main_menu_screen.dart` for example usage.
         providers: [
-          // ChangeNotifierProvider<DataStore>(
-          //   create: (_) => DataStore(),
-          //   lazy: false,
-          // ),
-          // ChangeNotifierProvider<AuthService>(
-          //   create: (context) =>
-          //       AuthService(dataStore: context.read<DataStore>()),
-          //   lazy: false,
-          // ),
-          // ChangeNotifierProvider<AccountService>(
-          //   create: (context) => AccountService(
-          //     authService: context.read<AuthService>(),
-          //     dataStore: context.read<DataStore>(),
-          //   ),
-          //   lazy: false,
-          // ),
-          // ChangeNotifierProvider<GameService>(
-          //   create: (context) => GameService(
-          //     dataStore: context.read<DataStore>(),
-          //   ),
-          //   lazy: false,
-          // ),
           Provider<UserSessionManager>(
             create: (context) => UserSessionManager(
               context.read<AuthService>(),
