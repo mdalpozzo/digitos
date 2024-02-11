@@ -19,19 +19,20 @@ class GameDataStore extends BaseDataStore {
     Query query = firestore.collection(FirestorePaths.PUZZLE_COLLECTION);
 
     // Only add the whereNotIn filter if excludedIds is not empty
-    if (excludedIds.isNotEmpty) {
-      List<String> limitedExcludedIds = excludedIds.toList();
+
+    List<String> limitedExcludedIds = excludedIds.toList();
 
 // Ensure the list does not exceed 10 items
-      if (limitedExcludedIds.length > 10) {
-        limitedExcludedIds = limitedExcludedIds.sublist(0, 10);
-      }
-
-      query = query.where(
-        FieldPath.documentId,
-        whereNotIn: limitedExcludedIds.toList(),
-      );
+    if (limitedExcludedIds.length > 10) {
+      limitedExcludedIds = limitedExcludedIds.sublist(0, 10);
     }
+
+// can't pass empty list to firestore wherenotin query
+
+    query = query.where(
+      FieldPath.documentId,
+      whereNotIn: limitedExcludedIds.isEmpty ? null : limitedExcludedIds,
+    );
 
     // Fetch the documents and take the first one
     QuerySnapshot result = await query.limit(1).get();
@@ -54,17 +55,27 @@ class GameDataStore extends BaseDataStore {
     required int difficulty,
     required Set<String> excludedIds,
   }) async {
-    _log.info('getPuzzleByDifficulty: difficulty: $difficulty');
+    _log.info(
+        'getPuzzleByDifficulty: difficulty: $difficulty, \nexcludedIds: ${excludedIds.toString()}');
 
     Query query = firestore
         .collection(FirestorePaths.PUZZLE_COLLECTION)
-        .where('difficulty', isEqualTo: difficulty);
+        .where(
+          'difficulty',
+          isEqualTo: difficulty,
+        )
+        .where(
+          FieldPath.documentId,
+          whereNotIn: excludedIds.toList(),
+        );
 
     // Fetch the documents and take the first one
     QuerySnapshot result = await query.limit(1).get();
 
     if (result.docs.isNotEmpty) {
       final data = result.docs.first.data();
+      _log.info(
+          'Data fetched: id: ${result.docs.first.id} data: ${data.toString()}');
       if (data is Map<String, dynamic>) {
         data['id'] = result.docs.first.id; // Add the document ID to the data
         return Puzzle.fromJson(data);

@@ -21,16 +21,6 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   String error = '';
 
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final gameViewModel = Provider.of<GameViewModel>(context, listen: false);
-      gameViewModel.initDailyPuzzle();
-    });
-  }
-
   void _showAlert(BuildContext context, String message) {
     showDialog(
       context: context,

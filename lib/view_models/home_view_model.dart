@@ -31,12 +31,6 @@ class HomeViewModel with ChangeNotifier {
     });
   }
 
-  onPressLevelButton({int? difficulty}) async {
-    _log.info('startNewGame');
-    gameService.selectedDifficulty = difficulty;
-    await gameService.getNewGame();
-  }
-
   bool loggedIn = false;
   String? displayName;
   int? bestScore;

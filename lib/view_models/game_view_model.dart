@@ -159,7 +159,7 @@ class GameViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void startNewGame() async {
+  Future<void> startNewGame() async {
     // TODO loading state in view
     Puzzle? newGame = await gameService.getNewGame();
 
@@ -171,6 +171,12 @@ class GameViewModel with ChangeNotifier {
       // Handle error
       _log.severe('GameViewModel.startNewGame: No new game found');
     }
+  }
+
+  Future<void> onPressLevelButton({int? difficulty}) async {
+    _log.info('onPressLevelButton');
+    gameService.selectedDifficulty = difficulty;
+    await startNewGame();
   }
 
   void setupPuzzle(Puzzle p) {

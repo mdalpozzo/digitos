@@ -51,6 +51,7 @@ class GameService {
       if (newPuzzle != null) {
         seenGameIds.add(newPuzzle.id);
 
+        _log.info('getNewGame - found puzzle: ${newPuzzle.id}');
         return newPuzzle;
       }
 
@@ -67,6 +68,7 @@ class GameService {
       if (newPuzzle != null) {
         seenGameIds.add(newPuzzle.id);
 
+        _log.info('getNewGame - found puzzle: ${newPuzzle.id}');
         return newPuzzle;
       }
 
