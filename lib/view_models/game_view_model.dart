@@ -159,11 +159,9 @@ class GameViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void startNewGame({int? difficulty}) async {
-    Puzzle? newGame = await gameService.getNewGame(
-      'userId',
-      difficulty: difficulty,
-    );
+  void startNewGame() async {
+    // TODO loading state in view
+    Puzzle? newGame = await gameService.getNewGame();
 
     if (newGame != null) {
       puzzle = newGame;

@@ -1,6 +1,5 @@
 import 'package:digitos/view_models/game_view_model.dart';
 import 'package:digitos/models/number_option.dart';
-import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/operations.dart';
 import 'package:digitos/widgets/operationEnumToDisplayString.dart';
 import 'package:digitos/widgets/SuccessModal.dart';

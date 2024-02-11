@@ -4,9 +4,6 @@
 
 import 'package:digitos/screens/game_screen/components/DailyButton.dart';
 import 'package:digitos/screens/game_screen/components/LevelButton.dart';
-import 'package:digitos/service_locator.dart';
-import 'package:digitos/services/account_service.dart';
-import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:digitos/view_models/home_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,11 +20,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.watch<Palette>();
     final settingsController = context.watch<SettingsController>();
-    // TODO logic that utilizes the accountService and authService should be moved to a ViewModel
-    final authService = ServiceLocator.get<AuthService>();
-    // var gameData = accountService.currentGameData;
-    var currentUser = authService.currentUser;
-    var isAnonymous = currentUser?.isAnonymous ?? false;
 
     return Scaffold(
       backgroundColor: palette.backgroundMain,

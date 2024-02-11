@@ -1,7 +1,3 @@
-// Copyright 2022, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'dart:developer' as dev;
 
 import 'package:digitos/config_manager.dart';
@@ -32,13 +28,13 @@ void main() async {
   _log.info('App start');
 
   WidgetsFlutterBinding.ensureInitialized();
-  // Put game into full screen mode on mobile devices.
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   // Lock the game to portrait mode on mobile devices.
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  // Put game into full screen mode on mobile devices.
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   try {
     await ConfigManager().init();
@@ -88,6 +84,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (context) => HomeViewModel(
               accountService: ServiceLocator.get<AccountService>(),
+              gameService: ServiceLocator.get<GameService>(),
             ),
           ),
           ChangeNotifierProvider(

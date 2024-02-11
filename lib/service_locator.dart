@@ -53,6 +53,7 @@ class ServiceLocator {
       () => GameService(
         accountDataStore: _getIt<AccountDataStore>(),
         gameDataStore: _getIt<GameDataStore>(),
+        authService: _getIt<AuthService>(),
       ),
     );
   }

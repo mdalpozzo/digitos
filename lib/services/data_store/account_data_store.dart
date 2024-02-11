@@ -112,9 +112,20 @@ class AccountDataStore extends BaseDataStore {
 
     // Fetch the list of played game configuration IDs for this user
     Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
-    Set<String> playedGameIds = userData != null
-        ? Set<String>.from(userData['gamesCompleted'] ?? <String>{})
-        : <String>{};
+    var playedGamesList = userData?['gamesCompleted'] as List<dynamic>? ?? [];
+
+    // Use a Set to collect puzzleIds to ensure uniqueness
+    Set<String> playedGameIds = {};
+
+    // Iterate over playedGamesList and extract puzzleId from each game
+    for (var game in playedGamesList) {
+      if (game is Map<String, dynamic>) {
+        var puzzleId = game['puzzleId'] as String?;
+        if (puzzleId != null) {
+          playedGameIds.add(puzzleId);
+        }
+      }
+    }
 
     return playedGameIds;
   }
