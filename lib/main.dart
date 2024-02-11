@@ -7,6 +7,7 @@ import 'dart:developer' as dev;
 import 'package:digitos/config_manager.dart';
 import 'package:digitos/service_locator.dart';
 import 'package:digitos/view_models/game_view_model.dart';
+import 'package:digitos/view_models/home_view_model.dart';
 import 'package:digitos/view_models/register_view_model.dart';
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/auth_service/auth_app_wrapper.dart';
@@ -76,23 +77,32 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppLifecycleObserver(
       child: MultiProvider(
-        // This is where you add objects that you want to have available
-        // throughout your game.
-        //
-        // Every widget in the game can access these objects by calling
-        // `context.watch()` or `context.read()`.
-        // See `lib/main_menu/main_menu_screen.dart` for example usage.
         providers: [
           Provider<UserSessionManager>(
             create: (context) => UserSessionManager(
-              context.read<AuthService>(),
-              context.read<AccountService>(),
+              authService: ServiceLocator.get<AuthService>(),
+              accountService: ServiceLocator.get<AccountService>(),
             ),
             lazy: false,
           ),
+          ChangeNotifierProvider(
+            create: (context) => HomeViewModel(
+              accountService: ServiceLocator.get<AccountService>(),
+            ),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => RegisterViewModel(
+              authService: ServiceLocator.get<AuthService>(),
+              accountService: ServiceLocator.get<AccountService>(),
+            ),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => GameViewModel(
+              accountService: ServiceLocator.get<AccountService>(),
+              gameService: ServiceLocator.get<GameService>(),
+            ),
+          ),
           Provider(create: (context) => SettingsController()),
-          Provider(create: (context) => Palette()),
-          ChangeNotifierProvider(create: (context) => PlayerProgress()),
           // Set up audio.
           ProxyProvider2<AppLifecycleStateNotifier, SettingsController,
               AudioController>(
@@ -105,18 +115,8 @@ class MyApp extends StatelessWidget {
             // Ensures that music starts immediately.
             lazy: false,
           ),
-          ChangeNotifierProvider(
-            create: (context) => RegisterViewModel(
-              authService: context.read<AuthService>(),
-              accountService: context.read<AccountService>(),
-            ),
-          ),
-          ChangeNotifierProvider(
-            create: (context) => GameViewModel(
-              accountService: context.read<AccountService>(),
-              gameService: context.read<GameService>(),
-            ),
-          ),
+          Provider(create: (context) => Palette()),
+          ChangeNotifierProvider(create: (context) => PlayerProgress()),
         ],
         child: Builder(builder: (context) {
           final palette = context.watch<Palette>();

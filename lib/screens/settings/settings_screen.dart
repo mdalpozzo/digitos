@@ -3,11 +3,11 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:digitos/services/account_service.dart';
+import 'package:digitos/view_models/settings_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../features/player_progress/player_progress.dart';
 import '../../style/my_button.dart';
 import '../../style/palette.dart';
 import '../../style/responsive_screen.dart';
@@ -23,8 +23,6 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsController>();
     final palette = context.watch<Palette>();
-    final accountService = context.watch<AccountService>();
-    String displayName = accountService.currentGameData?.displayName ?? '';
 
     return Scaffold(
       backgroundColor: palette.backgroundSettings,
@@ -42,10 +40,16 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             _gap,
-            _NameChangeLine(
-              'Name',
-              displayName.isNotEmpty ? displayName : '--',
-            ),
+            Selector<SettingsViewModel, String?>(
+                selector: (_, viewModel) => viewModel.displayName,
+                builder: (context, displayName, child) {
+                  return _NameChangeLine(
+                    'Name',
+                    displayName != null && displayName.isNotEmpty
+                        ? displayName
+                        : '--',
+                  );
+                }),
             ValueListenableBuilder<bool>(
               valueListenable: settings.soundsOn,
               builder: (context, soundsOn, child) => _SettingsLine(

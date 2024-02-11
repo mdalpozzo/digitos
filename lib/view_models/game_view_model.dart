@@ -25,10 +25,16 @@ class GameViewModel with ChangeNotifier {
     required this.accountService,
     required this.gameService,
   }) {
+    accountService.setBestScoreChangedCallback((int newBestScore) {
+      bestScore = newBestScore;
+      notifyListeners();
+    });
+
     initDailyPuzzle();
   }
 
   String error = '';
+  int? bestScore;
   Puzzle? puzzle;
   Puzzle? dailyPuzzle;
   List<NumberOption> options = [];

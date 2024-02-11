@@ -1,3 +1,4 @@
+import 'package:digitos/service_locator.dart';
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,9 +26,9 @@ class _AuthAppWrapperState extends State<AuthAppWrapper> {
 
     // Defer the execution until after the build phase
     Future.microtask(() async {
-      final authService = Provider.of<AuthService>(context, listen: false);
-      final accountService =
-          Provider.of<AccountService>(context, listen: false);
+      // TODO logic that utilizes the accountService and authService should be moved to a ViewModel
+      final authService = ServiceLocator.get<AuthService>();
+      final accountService = ServiceLocator.get<AccountService>();
 
       // Automatically create an anonymous user if no user is currently logged in
       UserCredential userCred = await authService.signInAnonymously();

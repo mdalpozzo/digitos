@@ -163,6 +163,40 @@ class AccountService {
     _currentGameData?.displayName = newName;
   }
 
+// these seem to granular... do i really need each separate value to have its own callback?
+  Function(int)? onBestScoreChanged;
+
+  void setBestScoreChangedCallback(Function(int) callback) {
+    onBestScoreChanged = callback;
+  }
+
+  void updateBestScore(int newBestScore) {
+    var callback = onBestScoreChanged;
+    if (callback != null) callback(newBestScore);
+  }
+
+  Function(String)? onDisplayNameChanged;
+
+  void setDisplayNameChangedCallback(Function(String) callback) {
+    onDisplayNameChanged = callback;
+  }
+
+  void updateDisplayName(String newDisplayName) {
+    var callback = onDisplayNameChanged;
+    if (callback != null) callback(newDisplayName);
+  }
+
+  Function(bool)? onLoggedInChanged;
+
+  void setLoggedInCallback(Function(bool) callback) {
+    onLoggedInChanged = callback;
+  }
+
+  void updateLoggedIn(bool newLoggedIn) {
+    var callback = onLoggedInChanged;
+    if (callback != null) callback(newLoggedIn);
+  }
+
   void dispose() {
     _authSubscription.cancel();
   }

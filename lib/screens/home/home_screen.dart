@@ -4,11 +4,14 @@
 
 import 'package:digitos/screens/game_screen/components/DailyButton.dart';
 import 'package:digitos/screens/game_screen/components/LevelButton.dart';
+import 'package:digitos/service_locator.dart';
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
+import 'package:digitos/view_models/home_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 import '../settings/settings.dart';
 import '../../style/palette.dart';
 import '../../style/responsive_screen.dart';
@@ -20,12 +23,11 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.watch<Palette>();
     final settingsController = context.watch<SettingsController>();
-    final authService = context.watch<AuthService>();
-    final accountService = context.watch<AccountService>();
+    // TODO logic that utilizes the accountService and authService should be moved to a ViewModel
+    final authService = ServiceLocator.get<AuthService>();
     // var gameData = accountService.currentGameData;
     var currentUser = authService.currentUser;
     var isAnonymous = currentUser?.isAnonymous ?? false;
-    var bestScore = accountService.currentGameData?.best;
 
     return Scaffold(
       backgroundColor: palette.backgroundMain,
@@ -69,41 +71,56 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 20),
-                      Text(
-                        bestScore != null ? bestScore.toString() : '-',
-                        style: TextStyle(
-                          fontFamily: 'Permanent Marker',
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Selector<HomeViewModel, int?>(
+                        selector: (_, viewModel) => viewModel.bestScore,
+                        builder: (context, bestScore, child) {
+                          return Text(
+                            bestScore != null ? bestScore.toString() : '-',
+                            style: TextStyle(
+                              fontFamily: 'Permanent Marker',
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
                 ),
-                // Absolutely positioned login button
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: currentUser == null || isAnonymous
-                      ? ElevatedButton(
-                          onPressed: () {
-                            GoRouter.of(context).go('/login');
-                          },
-                          child: Text(
-                            'Login',
-                            style: TextStyle(
-                              fontFamily: 'Permanent Marker',
-                              fontSize: 20,
-                            ),
-                          ),
-                        )
-                      : Text(
-                          accountService.currentGameData?.displayName ?? '',
-                          style: TextStyle(
-                            fontSize: 24,
-                            color: Colors.black,
-                          ),
+                Selector<HomeViewModel, Tuple2<bool?, String?>>(
+                    selector: (_, viewModel) => Tuple2(
+                          viewModel.loggedIn,
+                          viewModel.displayName,
                         ),
-                ),
+                    builder: (context, values, child) {
+                      var loggedIn = values.item1 ?? false;
+                      var displayName = values.item2;
+
+                      // Absolutely positioned login button
+                      return Align(
+                        alignment: Alignment.centerRight,
+                        child: !loggedIn
+                            ? ElevatedButton(
+                                onPressed: () {
+                                  GoRouter.of(context).go('/login');
+                                },
+                                child: Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    fontFamily: 'Permanent Marker',
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                displayName ?? '',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.black,
+                                ),
+                              ),
+                      );
+                    }),
               ],
             ),
             squarishMainArea: Column(
