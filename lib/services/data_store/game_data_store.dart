@@ -16,16 +16,31 @@ class GameDataStore extends BaseDataStore {
   ) async {
     _log.info('getArbitraryPuzzleExcludingIds: excludedPuzzles: $excludedIds');
 
-    Query query = firestore
-        .collection(FirestorePaths.PUZZLE_COLLECTION)
-        .where(FieldPath.documentId, whereNotIn: excludedIds.toList());
+    Query query = firestore.collection(FirestorePaths.PUZZLE_COLLECTION);
+
+    // Only add the whereNotIn filter if excludedIds is not empty
+    if (excludedIds.isNotEmpty) {
+      List<String> limitedExcludedIds = excludedIds.toList();
+
+// Ensure the list does not exceed 10 items
+      if (limitedExcludedIds.length > 10) {
+        limitedExcludedIds = limitedExcludedIds.sublist(0, 10);
+      }
+
+      query = query.where(
+        FieldPath.documentId,
+        whereNotIn: limitedExcludedIds.toList(),
+      );
+    }
 
     // Fetch the documents and take the first one
     QuerySnapshot result = await query.limit(1).get();
 
     if (result.docs.isNotEmpty) {
-      final data = result.docs.first.data();
-      if (data is Map<String, dynamic>) {
+      final data = result.docs.first.data() as Map<String,
+          dynamic>?; // Ensuring data is cast as Map<String, dynamic>
+      if (data != null) {
+        data['id'] = result.docs.first.id; // Add the document ID to the data
         return Puzzle.fromJson(data);
       } else {
         _log.warning('Data fetched is not a Map<String, dynamic>');
@@ -51,6 +66,7 @@ class GameDataStore extends BaseDataStore {
     if (result.docs.isNotEmpty) {
       final data = result.docs.first.data();
       if (data is Map<String, dynamic>) {
+        data['id'] = result.docs.first.id; // Add the document ID to the data
         return Puzzle.fromJson(data);
       } else {
         _log.warning('Data fetched is not a Map<String, dynamic>');
@@ -116,6 +132,7 @@ class GameDataStore extends BaseDataStore {
 
       final data = gameSnapshot.data();
       if (data is Map<String, dynamic>) {
+        data['id'] = gameSnapshot.id; // Add the document ID to the data
         return Puzzle.fromJson(data);
       } else {
         _log.warning('Data fetched is not a Map<String, dynamic>');

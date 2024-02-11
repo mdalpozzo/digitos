@@ -14,6 +14,19 @@ class Puzzle {
   });
 
   factory Puzzle.fromJson(Map<String, dynamic> json) {
+    if (json['id'] == null) {
+      throw FormatException('Missing "id" for Puzzle.');
+    }
+    if (json['target_number'] == null) {
+      throw FormatException('Missing "target_number" for Puzzle.');
+    }
+    if (json['initial_numbers'] == null || json['initial_numbers'] is! List) {
+      throw FormatException('Missing or invalid "initial_numbers" for Puzzle.');
+    }
+    if (json['difficulty'] == null) {
+      throw FormatException('Missing "difficulty" for Puzzle.');
+    }
+
     List<int> initialNumbers = List<int>.from(json['initial_numbers']);
     return Puzzle(
       id: json['id'],

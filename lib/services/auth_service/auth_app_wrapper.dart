@@ -4,7 +4,6 @@ import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:provider/provider.dart';
 
 // This widget is used to wrap the entire app and handle the creation of an
 // anonymous user if no user is currently logged in
