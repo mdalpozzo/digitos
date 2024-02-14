@@ -1,12 +1,12 @@
 import 'package:digitos/services/account_service.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/game_service.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 
 class HomeViewModel with ChangeNotifier {
   final AccountService accountService;
   final GameService gameService;
-  final _log = Logger('HomeViewModel');
+  static final _log = AppLogger('HomeViewModel');
 
   HomeViewModel({
     required this.accountService,

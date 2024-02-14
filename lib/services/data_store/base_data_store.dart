@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:logging/logging.dart';
+import 'package:digitos/services/app_logger.dart';
 
 // abstracts remote data source (aka DB/firestore)
 abstract class BaseDataStore {
   final FirebaseFirestore firestore;
-  final _log = Logger('DataStore');
+  final _log = AppLogger('DataStore');
 
   BaseDataStore({required this.firestore}) {
     _log.info('DataStore initialized');

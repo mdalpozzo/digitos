@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:digitos/constants.dart';
 import 'package:digitos/models/game_data.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:digitos/services/data_store/account_data_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:logging/logging.dart';
 
 // anything to do with account logic (auth is separate lower level service)
 class AccountService {
   final AuthService authService;
   final AccountDataStore accountDataStore;
 
-  final _log = Logger('AccountService');
+  final _log = AppLogger('AccountService');
 
   late final StreamSubscription<User?> _authSubscription;
 

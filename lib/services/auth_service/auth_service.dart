@@ -1,6 +1,6 @@
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/data_store/account_data_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:logging/logging.dart';
 
 // abstract firebase auth and anything to do with low level authentication functionality
 class AuthServiceError {
@@ -16,7 +16,7 @@ class AuthServiceError {
 class AuthService {
   final FirebaseAuth firebaseAuth;
   final AccountDataStore accountDataStore;
-  static final _log = Logger('AuthService');
+  static final _log = AppLogger('AuthService');
 
   AuthService({
     required this.accountDataStore,

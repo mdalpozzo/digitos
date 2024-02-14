@@ -1,8 +1,8 @@
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/view_models/register_view_model.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -15,7 +15,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _log = Logger('_RegisterScreenState');
+  final _log = AppLogger('_RegisterScreenState');
 
   @override
   Widget build(BuildContext context) {

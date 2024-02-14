@@ -2,8 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:digitos/services/app_logger.dart';
 import 'package:flutter/widgets.dart';
-import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 typedef AppLifecycleStateNotifier = ValueNotifier<AppLifecycleState>;
@@ -18,7 +18,7 @@ class AppLifecycleObserver extends StatefulWidget {
 }
 
 class _AppLifecycleObserverState extends State<AppLifecycleObserver> {
-  static final _log = Logger('AppLifecycleObserver');
+  static final _log = AppLogger('AppLifecycleObserver');
   late final AppLifecycleListener _appLifecycleListener;
 
   final ValueNotifier<AppLifecycleState> lifecycleListenable =

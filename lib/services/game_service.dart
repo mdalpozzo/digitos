@@ -1,11 +1,11 @@
 import 'package:digitos/models/puzzle.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:digitos/services/data_store/account_data_store.dart';
 import 'package:digitos/services/data_store/game_data_store.dart';
-import 'package:logging/logging.dart';
 
 class GameService {
-  final Logger _log = Logger('GameService');
+  static final _log = AppLogger('GameService');
   final GameDataStore gameDataStore;
   final AccountDataStore accountDataStore;
   final AuthService authService;

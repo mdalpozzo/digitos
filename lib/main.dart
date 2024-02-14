@@ -2,6 +2,7 @@ import 'dart:developer' as dev;
 
 import 'package:digitos/config_manager.dart';
 import 'package:digitos/service_locator.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/view_models/game_view_model.dart';
 import 'package:digitos/view_models/home_view_model.dart';
 import 'package:digitos/view_models/register_view_model.dart';
@@ -24,10 +25,12 @@ import 'screens/settings/settings.dart';
 import 'style/palette.dart';
 
 void main() async {
-  final _log = Logger('main');
-  _log.info('App start');
-
   WidgetsFlutterBinding.ensureInitialized();
+
+  await AppLogger.initialize();
+  final mainLog = AppLogger('main');
+  mainLog.info('App start');
+
   // Lock the game to portrait mode on mobile devices.
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -39,7 +42,7 @@ void main() async {
   try {
     await ConfigManager().init();
   } catch (err) {
-    _log.severe('Error loading environment vars', err);
+    mainLog.severe('Error loading environment vars', err);
   }
 
   // Basic logging setup.
@@ -60,7 +63,7 @@ void main() async {
       firebaseOptions: ConfigManager().firebaseConfig.currentPlatform,
     );
   } catch (err) {
-    _log.severe('Error loading services', err);
+    mainLog.severe('Error loading services', err);
   }
 
   runApp(MyApp());

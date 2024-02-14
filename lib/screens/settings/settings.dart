@@ -2,8 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:digitos/services/app_logger.dart';
 import 'package:flutter/foundation.dart';
-import 'package:logging/logging.dart';
 
 import 'persistence/local_storage_settings_persistence.dart';
 import 'persistence/settings_persistence.dart';
@@ -11,7 +11,7 @@ import 'persistence/settings_persistence.dart';
 /// An class that holds settings like [playerName] or [musicOn],
 /// and saves them to an injected persistence store.
 class SettingsController {
-  static final _log = Logger('SettingsController');
+  static final _log = AppLogger('SettingsController');
 
   /// The persistence store that is used to save settings.
   final SettingsPersistence _store;

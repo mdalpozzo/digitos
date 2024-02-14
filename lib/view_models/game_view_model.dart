@@ -1,10 +1,10 @@
 import 'package:digitos/services/account_service.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:digitos/models/number_option.dart';
 import 'package:digitos/models/puzzle.dart';
 import 'package:digitos/services/operations.dart';
 import 'package:digitos/services/game_service.dart';
-import 'package:logging/logging.dart';
 
 class OperationResult {
   final bool success;
@@ -19,7 +19,7 @@ class OperationResult {
 class GameViewModel with ChangeNotifier {
   final AccountService accountService;
   final GameService gameService;
-  final Logger _log = Logger('GameViewModel');
+  static final _log = AppLogger('GameViewModel');
 
   GameViewModel({
     required this.accountService,

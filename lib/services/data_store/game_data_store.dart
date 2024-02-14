@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/constants.dart';
 import 'package:digitos/models/puzzle.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/data_store/base_data_store.dart';
-import 'package:logging/logging.dart';
 
 // db operations related to the game aspect of the app (e.g. fetching puzzles, ...)
 class GameDataStore extends BaseDataStore {
-  Logger _log = Logger('GameDataStore');
+  static final _log = AppLogger('GameDataStore');
 
   GameDataStore({required super.firestore});
 

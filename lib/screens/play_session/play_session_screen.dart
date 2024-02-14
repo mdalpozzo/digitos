@@ -4,9 +4,9 @@
 
 import 'dart:async';
 
+import 'package:digitos/services/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart' hide Level;
 import 'package:provider/provider.dart';
 
 import '../../audio/audio_controller.dart';
@@ -35,7 +35,7 @@ class PlaySessionScreen extends StatefulWidget {
 }
 
 class _PlaySessionScreenState extends State<PlaySessionScreen> {
-  static final _log = Logger('PlaySessionScreen');
+  static final _log = AppLogger('PlaySessionScreen');
 
   static const _celebrationDuration = Duration(milliseconds: 2000);
 

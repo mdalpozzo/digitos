@@ -1,11 +1,11 @@
 import 'package:digitos/constants.dart';
 import 'package:digitos/models/game_data.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/data_store/base_data_store.dart';
-import 'package:logging/logging.dart';
 
 // account related DB operations
 class AccountDataStore extends BaseDataStore {
-  final Logger _log = Logger('AccountDataStore');
+  static final _log = AppLogger('AccountDataStore');
 
   AccountDataStore({required super.firestore});
 

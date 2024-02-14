@@ -1,13 +1,4 @@
-A starter Flutter project with a minimal shell of a game
-including the following features:
-
--   home screen
--   basic navigation
--   game-y theming
--   settings
--   sound
-
-You can jump directly into building your game in `lib/play_session/`.
+Built on the flutter game starter template.
 
 When you're ready for things like ads, in-app purchases, achievements,
 analytics, crash reporting, and so on,
@@ -108,31 +99,23 @@ with their mouth.
 
 ## Logging
 
-The template uses the [`logging`](https://pub.dev/packages/logging) package
-to log messages to the console. This makes it very easy to log messages
-from anywhere with something like the following:
+An AppLogger class exists that abstracts [`logging`](https://pub.dev/packages/logging) package.  Logs are written to an app_logs.txt file.  Use as follows:
 
 ```dart
-import 'package:logging/logging.dart';
+import 'package:digitos/services/app_logger.dart';
 
-final _log = Logger('Foo');
+final _log = AppLogger('Foo');
 
 void foo() {
   _log.info('Hello, world!');
 }
 ```
 
-This will show up in the console as:
-
-```text
-[Foo] Hello, world!
-```
-
 In a class instantiate the logger as a static class member when possible so only a single instance of the logger exists for each class across all class instances.
 
 ```dart
 class ExampleClass {
-  static final _log = Logger('ExampleClass');
+  static final _log = AppLogger('ExampleClass');
 }
 ```
 

@@ -7,9 +7,9 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:logging/logging.dart';
 
 import '../app_lifecycle/app_lifecycle.dart';
 import '../screens/settings/settings.dart';
@@ -18,7 +18,7 @@ import 'sounds.dart';
 
 /// Allows playing music and sound. A facade to `package:audioplayers`.
 class AudioController {
-  static final _log = Logger('AudioController');
+  static final _log = AppLogger('AudioController');
 
   final AudioPlayer _musicPlayer;
 

@@ -1,9 +1,9 @@
 import 'package:digitos/audio/audio_controller.dart';
 import 'package:digitos/audio/sounds.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/view_models/game_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 class LevelConfigItem {
@@ -22,6 +22,8 @@ class LevelButton extends StatelessWidget {
     required this.level,
   });
 
+  static final _log = AppLogger('LevelButton');
+
   final int level;
 
   static Map<int, LevelConfigItem> levelsDisplayConfig = {
@@ -33,7 +35,6 @@ class LevelButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var _log = Logger('Level${level}Button');
     final audioController = context.watch<AudioController>();
     final gameViewModel = Provider.of<GameViewModel>(context);
 

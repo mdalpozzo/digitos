@@ -1,10 +1,10 @@
 import 'package:digitos/services/account_service.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 
 class SettingsViewModel with ChangeNotifier {
   final AccountService accountService;
-  final _log = Logger('SettingsViewModel');
+  static final _log = AppLogger('SettingsViewModel');
 
   SettingsViewModel({
     required this.accountService,

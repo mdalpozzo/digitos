@@ -1,13 +1,13 @@
 import 'package:digitos/services/account_service.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 
 class RegisterViewModel with ChangeNotifier {
   final AccountService accountService;
   final AuthService authService;
-  final _log = Logger('RegisterViewModel');
+  static final _log = AppLogger('RegisterViewModel');
 
   RegisterViewModel({
     required this.accountService,

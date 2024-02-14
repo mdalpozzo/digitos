@@ -1,9 +1,9 @@
 import 'package:digitos/service_locator.dart';
 import 'package:digitos/services/account_service.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 
 // This widget is used to wrap the entire app and handle the creation of an
 // anonymous user if no user is currently logged in
@@ -17,7 +17,7 @@ class AuthAppWrapper extends StatefulWidget {
 }
 
 class _AuthAppWrapperState extends State<AuthAppWrapper> {
-  static final _log = Logger('AuthAppWrapper');
+  static final _log = AppLogger('AuthAppWrapper');
 
   @override
   void initState() {

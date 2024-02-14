@@ -1,9 +1,9 @@
 import 'package:digitos/firebase_options.dart';
+import 'package:digitos/services/app_logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:logging/logging.dart';
 
 class ConfigManager {
-  static final _log = Logger('ConfigManager');
+  static final _log = AppLogger('ConfigManager');
   static final ConfigManager _instance = ConfigManager._internal();
 
   factory ConfigManager() {
