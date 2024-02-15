@@ -2,10 +2,8 @@ import 'dart:developer' as dev;
 
 import 'package:digitos/config_manager.dart';
 import 'package:digitos/service_locator.dart';
-import 'package:digitos/services/app_lifecycle_service.dart';
 import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/audio_service.dart';
-import 'package:digitos/services/local_storage_service/local_storage_service.dart';
 import 'package:digitos/services/navigation_service.dart';
 import 'package:digitos/view_models/game_view_model.dart';
 import 'package:digitos/view_models/home_view_model.dart';
@@ -82,13 +80,6 @@ class MyApp extends StatelessWidget {
     return AppLifecycleObserver(
       child: MultiProvider(
         providers: [
-          // TODO. i hate that this is an outlier service that needs to be initialized here instead of in ServiceLocator, but it relies on the flutter system to enable access to audio assets
-          ChangeNotifierProvider(
-            create: (context) => AudioService(
-              localStorageService: ServiceLocator.get<LocalStorageService>(),
-              appLifecycleService: ServiceLocator.get<AppLifecycleService>(),
-            ),
-          ),
           Provider<UserSessionManager>(
             create: (context) => UserSessionManager(
               authService: ServiceLocator.get<AuthService>(),
