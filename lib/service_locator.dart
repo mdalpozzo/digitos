@@ -61,12 +61,6 @@ class ServiceLocator {
     _getIt.registerLazySingleton<LocalStorageService>(
       () => SharedPreferencesService(),
     );
-    _getIt.registerLazySingleton<AudioService>(
-      () => AudioService(
-        localStorageService: _getIt<LocalStorageService>(),
-        appLifecycleService: _getIt<AppLifecycleService>(),
-      ),
-    );
     _getIt.registerLazySingleton<AuthService>(
       () => AuthService(
         accountDataStore: _getIt<AccountDataStore>(),

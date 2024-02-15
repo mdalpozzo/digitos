@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
             create: (context) => GameViewModel(
               accountService: ServiceLocator.get<AccountService>(),
               gameService: ServiceLocator.get<GameService>(),
-              audioService: context.read<AudioService>(),
+              audioService: ServiceLocator.get<AudioService>(),
               navigationService: ServiceLocator.get<NavigationService>(),
             ),
           ),
