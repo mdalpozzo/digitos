@@ -1,18 +1,19 @@
+import 'package:digitos/services/app_logger.dart';
 import 'package:flutter/widgets.dart';
 
-class AppLifecycleService with WidgetsBindingObserver {
+class AppLifecycleService {
   bool _hasStarted = false;
+  static final _log = AppLogger('AppLifecycleService');
 
   final List<VoidCallback> _onStartCallbacks = [];
   final List<VoidCallback> _onResumedCallbacks = [];
   final List<VoidCallback> _onPausedCallbacks = [];
 
-  AppLifecycleService() {
-    WidgetsBinding.instance.addObserver(this);
-    _triggerAppStart();
-  }
+  AppLifecycleService();
 
-  void _triggerAppStart() {
+  void handleAppStart() {
+    _log.info('handleAppStart');
+
     if (!_hasStarted) {
       for (var callback in _onStartCallbacks) {
         callback();
@@ -21,9 +22,8 @@ class AppLifecycleService with WidgetsBindingObserver {
     }
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
+  void handleAppLifecycleChange(AppLifecycleState state) {
+    _log.info('handleAppLifecycleChange: $state');
     if (state == AppLifecycleState.resumed) {
       for (var callback in _onResumedCallbacks) {
         callback();
@@ -65,6 +65,8 @@ class AppLifecycleService with WidgetsBindingObserver {
   }
 
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    _onStartCallbacks.clear();
+    _onResumedCallbacks.clear();
+    _onPausedCallbacks.clear();
   }
 }

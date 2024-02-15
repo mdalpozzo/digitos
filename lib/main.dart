@@ -2,6 +2,7 @@ import 'dart:developer' as dev;
 
 import 'package:digitos/config_manager.dart';
 import 'package:digitos/service_locator.dart';
+import 'package:digitos/services/app_lifecycle_service.dart';
 import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/audio_service.dart';
 import 'package:digitos/services/navigation_service.dart';
@@ -78,6 +79,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppLifecycleObserver(
+      appLifecycleService: ServiceLocator.get<AppLifecycleService>(),
       child: MultiProvider(
         providers: [
           Provider<UserSessionManager>(
