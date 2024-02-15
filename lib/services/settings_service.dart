@@ -17,32 +17,32 @@ class SettingsService {
   }
 
   Future<bool> getAudioOn() async {
-    String? value = await _localStorageService.getString('audioOn');
-    return value == 'true';
+    bool? value = await _localStorageService.getBool('audioOn');
+    return value == true;
   }
 
   Future<void> setAudioOn(bool on) async {
-    await _localStorageService.setString('audioOn', on.toString());
+    await _localStorageService.setBool('audioOn', on);
     _log.info('AudioOn set to $on');
   }
 
   Future<bool> getMusicOn() async {
-    String? value = await _localStorageService.getString('musicOn');
-    return value == 'true';
+    bool? value = await _localStorageService.getBool('musicOn');
+    return value == true;
   }
 
   Future<void> setMusicOn(bool on) async {
-    await _localStorageService.setString('musicOn', on.toString());
+    await _localStorageService.setBool('musicOn', on);
     _log.info('MusicOn set to $on');
   }
 
   Future<bool> getSoundsOn() async {
-    String? value = await _localStorageService.getString('soundsOn');
-    return value == 'true';
+    bool? value = await _localStorageService.getBool('soundsOn');
+    return value == true;
   }
 
   Future<void> setSoundsOn(bool on) async {
-    await _localStorageService.setString('soundsOn', on.toString());
+    await _localStorageService.setBool('soundsOn', on);
     _log.info('SoundsOn set to $on');
   }
 }
