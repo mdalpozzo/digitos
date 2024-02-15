@@ -6,7 +6,7 @@ import 'package:digitos/audio/songs.dart';
 import 'package:digitos/audio/sounds.dart';
 import 'package:digitos/services/app_lifecycle_service.dart';
 import 'package:digitos/services/app_logger.dart';
-import 'package:digitos/services/local_storage_service/local_storage_service.dart';
+import 'package:digitos/services/settings_service_interface.dart';
 import 'package:flutter/foundation.dart';
 
 class AudioService with ChangeNotifier {
@@ -14,13 +14,15 @@ class AudioService with ChangeNotifier {
 
   final AppLifecycleService _appLifecycleService;
 
+  late StreamSubscription<bool> _audioOnSubscription;
+
   final AudioPlayer _musicPlayer = AudioPlayer(playerId: 'musicPlayer');
   final List<AudioPlayer> _sfxPlayers;
   // TODO is this the best way to handle the playlist? init as empty then load later?
   Queue<Song> _playlist = Queue.from([]);
   int _currentSfxPlayer = 0;
   final Random _random = Random();
-  final LocalStorageService _localStorageService;
+  final SettingsServiceInterface _settingsService;
 
   bool _assetsLoaded = false;
 
@@ -30,22 +32,23 @@ class AudioService with ChangeNotifier {
 
   AudioService({
     int polyphony = 2,
-    required LocalStorageService localStorageService,
+    required SettingsServiceInterface settingsService,
     required AppLifecycleService appLifecycleService,
-  })  : _localStorageService = localStorageService,
+  })  : _settingsService = settingsService,
         _appLifecycleService = appLifecycleService,
         _sfxPlayers = List.generate(polyphony, (_) => AudioPlayer()).toList() {
     appLifecycleService.addOnResumedCallback(_preloadSfx);
     _loadSettings();
     _musicPlayer.onPlayerComplete.listen((_) => _handleSongFinished());
+    _audioOnSubscription = _settingsService.audioOnStream.listen(_setAudio);
   }
 
   Future<void> _loadSettings() async {
     _log.info('Loading audio settings');
     // Load preferences from local storage
-    _audioOn = await _localStorageService.getBool('audioOn') ?? false;
-    _musicOn = await _localStorageService.getBool('musicOn') ?? false;
-    _soundsOn = await _localStorageService.getBool('soundsOn') ?? false;
+    _audioOn = await _settingsService.getAudioOn();
+    _musicOn = await _settingsService.getMusicOn();
+    _soundsOn = await _settingsService.getSoundsOn();
   }
 
   Future<void> _preloadSfx() async {
@@ -77,27 +80,28 @@ class AudioService with ChangeNotifier {
     playSfx(SfxType.buttonTap);
   }
 
-  Future<void> toggleAudioOn() async {
-    _log.info('Toggling audio');
-    _audioOn = !_audioOn;
-    await _localStorageService.setBool('audioOn', _audioOn);
-    if (!_audioOn) _stopAllSound();
+  Future<void> _setAudio(bool on) async {
+    _log.info('Toggling audio $on');
+    _audioOn = on;
+    if (!on) _stopAllSound();
   }
 
-  Future<void> toggleMusicOn() async {
+  Future<void> toggleMusic() async {
     _log.info('Toggling music');
     _musicOn = !_musicOn;
-    await _localStorageService.setBool('musicOn', _musicOn);
-    if (_musicOn)
+    await _settingsService.setMusicOn(_musicOn);
+
+    if (_musicOn) {
       _playCurrentSongInPlaylist();
-    else
+    } else {
       _musicPlayer.pause();
+    }
   }
 
-  Future<void> toggleSoundsOn() async {
+  Future<void> toggleSounds() async {
     _log.info('Toggling sounds');
     _soundsOn = !_soundsOn;
-    await _localStorageService.setBool('soundsOn', _soundsOn);
+    await _settingsService.setSoundsOn(_soundsOn);
     if (!_soundsOn) _sfxPlayers.forEach((player) => player.stop());
   }
 
@@ -122,8 +126,10 @@ class AudioService with ChangeNotifier {
   }
 
   // Ensure to unregister the callbacks when the service is disposed
+  @override
   void dispose() {
     _appLifecycleService.removeOnResumedCallback(_preloadSfx);
+    _audioOnSubscription.cancel();
     super.dispose();
   }
 }

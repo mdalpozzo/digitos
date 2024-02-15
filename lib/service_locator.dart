@@ -87,7 +87,7 @@ class ServiceLocator {
     );
     _getIt.registerLazySingleton<AudioService>(
       () => AudioService(
-        localStorageService: _getIt<LocalStorageService>(),
+        settingsService: _getIt<SettingsService>(),
         appLifecycleService: _getIt<AppLifecycleService>(),
       ),
     );

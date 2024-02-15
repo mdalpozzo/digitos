@@ -1,16 +1,41 @@
+import 'dart:async';
+
+import 'package:digitos/services/audio_service.dart';
 import 'package:digitos/services/settings_service.dart';
 import 'package:digitos/view_models/base_view_model.dart';
 
 class SettingsViewModel extends BaseViewModel {
   final SettingsService settingsService;
+  final AudioService audioService;
 
   String? _displayName;
   bool _audioOn = false;
   bool _musicOn = true;
   bool _soundsOn = true;
 
-  SettingsViewModel({required this.settingsService}) {
+  late StreamSubscription<bool> _audioOnSubscription;
+  late StreamSubscription<bool> _musicOnSubscription;
+  late StreamSubscription<bool> _soundsOnSubscription;
+
+  SettingsViewModel({
+    required this.settingsService,
+    required this.audioService,
+  }) : super() {
     _loadSettings();
+
+    // TODO can we group these values into a single audioSettings config object? and only update the changed vars to avoid multiple streams?
+    _audioOnSubscription = settingsService.audioOnStream.listen((newState) {
+      _audioOn = newState;
+      notifyListeners();
+    });
+    _musicOnSubscription = settingsService.musicOnStream.listen((newState) {
+      _musicOn = newState;
+      notifyListeners();
+    });
+    _soundsOnSubscription = settingsService.soundOnStream.listen((newState) {
+      _soundsOn = newState;
+      notifyListeners();
+    });
   }
 
   // Getters for UI to consume
@@ -21,37 +46,44 @@ class SettingsViewModel extends BaseViewModel {
 
   // Internal method to load settings initially
   Future<void> _loadSettings() async {
+    // TODO maybe see if this should be streamed
     _displayName = await settingsService.getDisplayName();
-    _audioOn = await settingsService.getAudioOn();
-    _musicOn = await settingsService.getMusicOn();
-    _soundsOn = await settingsService.getSoundsOn();
-    notifyListeners(); // Notify UI after loading all settings
+    notifyListeners();
   }
 
   // Update methods that modify the settings and notify listeners
   void setDisplayName(String? value) async {
-    if (value == null)
+    if (value == null) {
       return; // Optionally handle null/empty values if necessary
+    }
     await settingsService.setDisplayName(value);
     _displayName = value;
-    notifyListeners(); // Notify UI about the change
+    notifyListeners();
   }
 
   void toggleAudioOn() async {
-    _audioOn = !_audioOn;
-    await settingsService.setAudioOn(_audioOn);
-    notifyListeners(); // Notify UI about the change
+    await settingsService.setAudioOn(!_audioOn);
+    notifyListeners();
   }
 
   void toggleMusicOn() async {
     _musicOn = !_musicOn;
     await settingsService.setMusicOn(_musicOn);
-    notifyListeners(); // Notify UI about the change
+    notifyListeners();
   }
 
   void toggleSoundsOn() async {
     _soundsOn = !_soundsOn;
     await settingsService.setSoundsOn(_soundsOn);
-    notifyListeners(); // Notify UI about the change
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _audioOnSubscription.cancel();
+    _musicOnSubscription.cancel();
+    _soundsOnSubscription.cancel();
+
+    super.dispose();
   }
 }

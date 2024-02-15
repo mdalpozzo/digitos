@@ -110,6 +110,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (context) => SettingsViewModel(
               settingsService: ServiceLocator.get<SettingsService>(),
+              audioService: ServiceLocator.get<AudioService>(),
             ),
           ),
           Provider(create: (context) => Palette()),

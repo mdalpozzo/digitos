@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.watch<Palette>();
-    final settingsController = context.watch<SettingsViewModel>();
+    final settingsViewModel = context.watch<SettingsViewModel>();
     final gameViewModel = context.watch<GameViewModel>();
 
     return Scaffold(
@@ -204,7 +204,7 @@ class HomeScreen extends StatelessWidget {
                     selector: (_, viewModel) => viewModel.audioOn,
                     builder: (context, audioOn, child) {
                       return IconButton(
-                        onPressed: () => settingsController.toggleAudioOn(),
+                        onPressed: () => settingsViewModel.toggleAudioOn(),
                         iconSize: 50,
                         icon:
                             Icon(audioOn ? Icons.volume_up : Icons.volume_off),
