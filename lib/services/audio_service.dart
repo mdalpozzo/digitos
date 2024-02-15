@@ -41,9 +41,9 @@ class AudioService {
   Future<void> _loadSettings() async {
     _log.info('Loading audio settings');
     // Load preferences from local storage
-    _audioOn = await _localStorageService.getBool('audioOn') ?? true;
-    _musicOn = await _localStorageService.getBool('musicOn') ?? true;
-    _soundsOn = await _localStorageService.getBool('soundsOn') ?? true;
+    _audioOn = await _localStorageService.getBool('audioOn') ?? false;
+    _musicOn = await _localStorageService.getBool('musicOn') ?? false;
+    _soundsOn = await _localStorageService.getBool('soundsOn') ?? false;
   }
 
   void onResume() {
