@@ -20,6 +20,8 @@ class AudioService {
   final Random _random = Random();
   final LocalStorageService _localStorageService;
 
+  bool _assetsLoaded = false;
+
   bool _audioOn = true;
   bool _musicOn = true;
   bool _soundsOn = true;
@@ -31,7 +33,7 @@ class AudioService {
   })  : _localStorageService = localStorageService,
         _appLifecycleService = appLifecycleService,
         _sfxPlayers = List.generate(polyphony, (_) => AudioPlayer()).toList() {
-    appLifecycleService.addOnStartCallback(_preloadSfx);
+    appLifecycleService.addOnResumedCallback(_preloadSfx);
     _loadSettings();
     _musicPlayer.onPlayerComplete.listen((_) => _handleSongFinished());
   }
@@ -43,6 +45,14 @@ class AudioService {
     _musicOn = await _localStorageService.getBool('musicOn') ?? true;
     _soundsOn = await _localStorageService.getBool('soundsOn') ?? true;
   }
+
+  void onResume() {
+    if (!_assetsLoaded) {
+      _preloadSfx();
+    }
+  }
+
+
 
   void playSfx(SfxType type) {
     if (!_audioOn || !_soundsOn) return;
@@ -86,6 +96,7 @@ class AudioService {
     _log.info('Preloading sfx');
     final sfxFiles = SfxType.values.expand(soundTypeToFilename).toList();
     await AudioCache(prefix: 'sfx/').loadAll(sfxFiles);
+    _assetsLoaded = true;
   }
 
   void _handleSongFinished() {
@@ -110,6 +121,6 @@ class AudioService {
 
   // Ensure to unregister the callbacks when the service is disposed
   void dispose() {
-    _appLifecycleService.removeOnStartCallback(_preloadSfx);
+    _appLifecycleService.removeOnResumedCallback(_preloadSfx);
   }
 }
