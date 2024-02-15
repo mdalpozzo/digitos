@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/services/account_service.dart';
+import 'package:digitos/services/app_lifecycle_service.dart';
 import 'package:digitos/services/audio_service.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:digitos/services/data_store/account_data_store.dart';
@@ -22,6 +23,9 @@ class ServiceLocator {
     required GoRouter router,
   }) async {
     await Firebase.initializeApp(options: firebaseOptions);
+
+    // Register AppLifecycleService
+    _getIt.registerSingleton<AppLifecycleService>(AppLifecycleService());
 
     // ===== FIREBASE
     _getIt.registerLazySingleton<FirebaseFirestore>(
@@ -75,6 +79,7 @@ class ServiceLocator {
     _getIt.registerLazySingleton<AudioService>(
       () => AudioService(
         localStorageService: _getIt<LocalStorageService>(),
+        appLifecycleService: _getIt<AppLifecycleService>(),
       ),
     );
     _getIt.registerLazySingleton<NavigationService>(

@@ -4,11 +4,14 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:digitos/audio/songs.dart';
 import 'package:digitos/audio/sounds.dart';
+import 'package:digitos/services/app_lifecycle_service.dart';
 import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/local_storage_service/local_storage_service.dart';
 
 class AudioService {
   static final _log = AppLogger('AudioService');
+
+  final AppLifecycleService _appLifecycleService;
 
   final AudioPlayer _musicPlayer = AudioPlayer(playerId: 'musicPlayer');
   final List<AudioPlayer> _sfxPlayers;
@@ -24,11 +27,13 @@ class AudioService {
   AudioService({
     int polyphony = 2,
     required LocalStorageService localStorageService,
+    required AppLifecycleService appLifecycleService,
   })  : _localStorageService = localStorageService,
+        _appLifecycleService = appLifecycleService,
         _sfxPlayers = List.generate(polyphony, (_) => AudioPlayer()).toList() {
+    appLifecycleService.addOnStartCallback(_preloadSfx);
     _loadSettings();
     _musicPlayer.onPlayerComplete.listen((_) => _handleSongFinished());
-    unawaited(_preloadSfx());
   }
 
   Future<void> _loadSettings() async {
@@ -101,5 +106,10 @@ class AudioService {
     _log.info('Stopping all sound');
     _musicPlayer.stop();
     _sfxPlayers.forEach((player) => player.stop());
+  }
+
+  // Ensure to unregister the callbacks when the service is disposed
+  void dispose() {
+    _appLifecycleService.removeOnStartCallback(_preloadSfx);
   }
 }
