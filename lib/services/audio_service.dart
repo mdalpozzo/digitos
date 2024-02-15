@@ -15,6 +15,8 @@ class AudioService with ChangeNotifier {
   final AppLifecycleService _appLifecycleService;
 
   late StreamSubscription<bool> _audioOnSubscription;
+  late StreamSubscription<bool> _musicOnSubscription;
+  late StreamSubscription<bool> _soundsOnSubscription;
 
   final AudioPlayer _musicPlayer = AudioPlayer(playerId: 'musicPlayer');
   final List<AudioPlayer> _sfxPlayers;
@@ -38,24 +40,20 @@ class AudioService with ChangeNotifier {
         _appLifecycleService = appLifecycleService,
         _sfxPlayers = List.generate(polyphony, (_) => AudioPlayer()).toList() {
     appLifecycleService.addOnResumedCallback(_preloadSfx);
-    _loadSettings();
     _musicPlayer.onPlayerComplete.listen((_) => _handleSongFinished());
-    _audioOnSubscription = _settingsService.audioOnStream.listen(_setAudio);
-  }
-
-  Future<void> _loadSettings() async {
-    _log.info('Loading audio settings');
-    // Load preferences from local storage
-    _audioOn = await _settingsService.getAudioOn();
-    _musicOn = await _settingsService.getMusicOn();
-    _soundsOn = await _settingsService.getSoundsOn();
+    _audioOnSubscription = _settingsService.audioOnStream.listen(_setAudioOn);
+    _musicOnSubscription = _settingsService.musicOnStream.listen(_setMusicOn);
+    _soundsOnSubscription =
+        _settingsService.soundsOnStream.listen(_setSoundsOn);
   }
 
   Future<void> _preloadSfx() async {
     _log.info('Preloading sfx');
     final sfxFiles = SfxType.values.expand(soundTypeToFilename).toList();
     await AudioCache(prefix: 'sfx/').loadAll(sfxFiles);
+
     _playlist = Queue.of(List<Song>.of(songs)..shuffle());
+    _playCurrentSongInPlaylist();
 
     _assetsLoaded = true;
   }
@@ -80,29 +78,27 @@ class AudioService with ChangeNotifier {
     playSfx(SfxType.buttonTap);
   }
 
-  Future<void> _setAudio(bool on) async {
+  Future<void> _setAudioOn(bool on) async {
     _log.info('Toggling audio $on');
     _audioOn = on;
     if (!on) _stopAllSound();
   }
 
-  Future<void> toggleMusic() async {
-    _log.info('Toggling music');
-    _musicOn = !_musicOn;
-    await _settingsService.setMusicOn(_musicOn);
+  Future<void> _setMusicOn(bool on) async {
+    _log.info('Toggling music $on');
+    _musicOn = on;
 
-    if (_musicOn) {
+    if (on) {
       _playCurrentSongInPlaylist();
     } else {
       _musicPlayer.pause();
     }
   }
 
-  Future<void> toggleSounds() async {
-    _log.info('Toggling sounds');
-    _soundsOn = !_soundsOn;
-    await _settingsService.setSoundsOn(_soundsOn);
-    if (!_soundsOn) _sfxPlayers.forEach((player) => player.stop());
+  Future<void> _setSoundsOn(bool on) async {
+    _log.info('Toggling sounds $on');
+    _soundsOn = on;
+    if (!on) _sfxPlayers.forEach((player) => player.stop());
   }
 
   void _handleSongFinished() {
@@ -115,6 +111,12 @@ class AudioService with ChangeNotifier {
   Future<void> _playCurrentSongInPlaylist() async {
     _log.info('Playing current song');
     if (!_musicOn || !_audioOn) return;
+
+    if (_playlist.isEmpty) {
+      _log.warning('Could not play song. Playlist is empty');
+      return;
+    }
+
     final song = _playlist.first;
     await _musicPlayer.play(AssetSource('music/${song.filename}'));
   }
@@ -130,6 +132,8 @@ class AudioService with ChangeNotifier {
   void dispose() {
     _appLifecycleService.removeOnResumedCallback(_preloadSfx);
     _audioOnSubscription.cancel();
+    _musicOnSubscription.cancel();
+    _soundsOnSubscription.cancel();
     super.dispose();
   }
 }

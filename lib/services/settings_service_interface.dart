@@ -9,5 +9,5 @@ abstract class SettingsServiceInterface {
   Stream<bool> get musicOnStream;
   Future<bool> getSoundsOn();
   Future<void> setSoundsOn(bool on);
-  Stream<bool> get soundOnStream;
+  Stream<bool> get soundsOnStream;
 }

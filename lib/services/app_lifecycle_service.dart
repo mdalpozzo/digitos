@@ -8,6 +8,7 @@ class AppLifecycleService with WidgetsBindingObserver {
   final List<VoidCallback> _onPausedCallbacks = [];
 
   AppLifecycleService() {
+    WidgetsBinding.instance.addObserver(this);
     _triggerAppStart();
   }
 

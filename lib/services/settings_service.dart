@@ -41,7 +41,7 @@ class SettingsService implements SettingsServiceInterface {
 
   Future<void> setAudioOn(bool on) async {
     await _localStorageService.setBool('audioOn', on);
-    _audioOnController.add(on); // Emit the new setting
+    _audioOnController.add(on);
 
     _log.info('AudioOn set to $on');
   }
@@ -55,10 +55,12 @@ class SettingsService implements SettingsServiceInterface {
 
   Future<void> setMusicOn(bool on) async {
     await _localStorageService.setBool('musicOn', on);
+    _musicOnController.add(on);
+
     _log.info('MusicOn set to $on');
   }
 
-  Stream<bool> get soundOnStream => _soundsOnController.stream;
+  Stream<bool> get soundsOnStream => _soundsOnController.stream;
 
   Future<bool> getSoundsOn() async {
     bool? value = await _localStorageService.getBool('soundsOn');
@@ -67,11 +69,14 @@ class SettingsService implements SettingsServiceInterface {
 
   Future<void> setSoundsOn(bool on) async {
     await _localStorageService.setBool('soundsOn', on);
+    _soundsOnController.add(on);
     _log.info('SoundsOn set to $on');
   }
 
   // Dispose method to close the controllers
   void dispose() {
     _audioOnController.close();
+    _musicOnController.close();
+    _soundsOnController.close();
   }
 }

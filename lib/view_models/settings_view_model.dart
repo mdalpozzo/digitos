@@ -32,7 +32,7 @@ class SettingsViewModel extends BaseViewModel {
       _musicOn = newState;
       notifyListeners();
     });
-    _soundsOnSubscription = settingsService.soundOnStream.listen((newState) {
+    _soundsOnSubscription = settingsService.soundsOnStream.listen((newState) {
       _soundsOn = newState;
       notifyListeners();
     });
