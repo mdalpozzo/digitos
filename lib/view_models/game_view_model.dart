@@ -1,6 +1,8 @@
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/app_logger.dart';
-import 'package:flutter/material.dart';
+import 'package:digitos/services/audio_service.dart';
+import 'package:digitos/services/navigation_service.dart';
+import 'package:digitos/view_models/base_view_model.dart';
 import 'package:digitos/models/number_option.dart';
 import 'package:digitos/models/puzzle.dart';
 import 'package:digitos/services/operations.dart';
@@ -16,14 +18,18 @@ class OperationResult {
   });
 }
 
-class GameViewModel with ChangeNotifier {
+class GameViewModel extends BaseViewModel {
   final AccountService accountService;
   final GameService gameService;
+  final AudioService audioService;
+  final NavigationService navigationService;
   static final _log = AppLogger('GameViewModel');
 
   GameViewModel({
     required this.accountService,
     required this.gameService,
+    required this.audioService,
+    required this.navigationService,
   }) {
     accountService.setBestScoreChangedCallback((int newBestScore) {
       bestScore = newBestScore;
@@ -159,6 +165,7 @@ class GameViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  // TODO this logic may need to be duplicate in other places like the home_view... refactor this so it's not duplicated
   Future<void> startNewGame() async {
     // TODO loading state in view
     Puzzle? newGame = await gameService.getNewGame();
@@ -173,10 +180,22 @@ class GameViewModel with ChangeNotifier {
     }
   }
 
+// todo think about this for performance... some kind of loading animation or something? when should it actually fetch the data, now or loading state on game screen?
   Future<void> onPressLevelButton({int? difficulty}) async {
-    _log.info('onPressLevelButton');
+    _log.info('onPressLevelButton: $difficulty');
     gameService.selectedDifficulty = difficulty;
+    audioService.playButtonTap();
     await startNewGame();
+    navigationService.navigateTo('/game');
+  }
+
+// todo think about this for performance... some kind of loading animation or something? when should it actually fetch the data, now or loading state on game screen?
+  Future<void> onPressDailyButton({int? difficulty}) async {
+    _log.info('onPressLevelButton: $difficulty');
+    setPuzzleToDaily();
+    audioService.playButtonTap();
+    await startNewGame();
+    navigationService.navigateTo('/game');
   }
 
   void setupPuzzle(Puzzle p) {

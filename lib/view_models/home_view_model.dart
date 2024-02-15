@@ -1,9 +1,9 @@
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/game_service.dart';
-import 'package:flutter/material.dart';
+import 'package:digitos/view_models/base_view_model.dart';
 
-class HomeViewModel with ChangeNotifier {
+class HomeViewModel extends BaseViewModel {
   final AccountService accountService;
   final GameService gameService;
   static final _log = AppLogger('HomeViewModel');

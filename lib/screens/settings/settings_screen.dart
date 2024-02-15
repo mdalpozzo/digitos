@@ -11,7 +11,6 @@ import '../../style/my_button.dart';
 import '../../style/palette.dart';
 import '../../style/responsive_screen.dart';
 import 'custom_name_dialog.dart';
-import 'settings.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -20,7 +19,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context.watch<SettingsController>();
+    final settings = context.watch<SettingsViewModel>();
     final palette = context.watch<Palette>();
 
     return Scaffold(
@@ -40,25 +39,26 @@ class SettingsScreen extends StatelessWidget {
             ),
             _gap,
             Selector<SettingsViewModel, String?>(
-                selector: (_, viewModel) => viewModel.displayName,
-                builder: (context, displayName, child) {
-                  return _NameChangeLine(
-                    'Name',
-                    displayName != null && displayName.isNotEmpty
-                        ? displayName
-                        : '--',
-                  );
-                }),
-            ValueListenableBuilder<bool>(
-              valueListenable: settings.soundsOn,
+              selector: (_, viewModel) => viewModel.displayName,
+              builder: (context, displayName, child) {
+                return _NameChangeLine(
+                  'Name',
+                  displayName != null && displayName.isNotEmpty
+                      ? displayName
+                      : '--',
+                );
+              },
+            ),
+            Selector<SettingsViewModel, bool>(
+              selector: (_, viewModel) => settings.soundsOn,
               builder: (context, soundsOn, child) => _SettingsLine(
                 'Sound FX',
                 Icon(soundsOn ? Icons.graphic_eq : Icons.volume_off),
                 onSelected: () => settings.toggleSoundsOn(),
               ),
             ),
-            ValueListenableBuilder<bool>(
-              valueListenable: settings.musicOn,
+            Selector<SettingsViewModel, bool>(
+              selector: (_, viewModel) => settings.musicOn,
               builder: (context, musicOn, child) => _SettingsLine(
                 'Music',
                 Icon(musicOn ? Icons.music_note : Icons.music_off),

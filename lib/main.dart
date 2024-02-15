@@ -3,6 +3,8 @@ import 'dart:developer' as dev;
 import 'package:digitos/config_manager.dart';
 import 'package:digitos/service_locator.dart';
 import 'package:digitos/services/app_logger.dart';
+import 'package:digitos/services/audio_service.dart';
+import 'package:digitos/services/navigation_service.dart';
 import 'package:digitos/view_models/game_view_model.dart';
 import 'package:digitos/view_models/home_view_model.dart';
 import 'package:digitos/view_models/register_view_model.dart';
@@ -11,6 +13,7 @@ import 'package:digitos/services/auth_service/auth_app_wrapper.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:digitos/services/game_service.dart';
 import 'package:digitos/users/user_session_manager.dart';
+import 'package:digitos/view_models/settings_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,10 +21,9 @@ import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 import 'app_lifecycle/app_lifecycle.dart';
-import 'audio/audio_controller.dart';
 import 'features/player_progress/player_progress.dart';
 import 'router.dart';
-import 'screens/settings/settings.dart';
+import 'services/settings_service.dart';
 import 'style/palette.dart';
 
 void main() async {
@@ -61,6 +63,7 @@ void main() async {
   try {
     await ServiceLocator.loadServices(
       firebaseOptions: ConfigManager().firebaseConfig.currentPlatform,
+      router: router,
     );
   } catch (err) {
     mainLog.severe('Error loading services', err);
@@ -100,21 +103,27 @@ class MyApp extends StatelessWidget {
             create: (context) => GameViewModel(
               accountService: ServiceLocator.get<AccountService>(),
               gameService: ServiceLocator.get<GameService>(),
+              audioService: ServiceLocator.get<AudioService>(),
+              navigationService: ServiceLocator.get<NavigationService>(),
             ),
           ),
-          Provider(create: (context) => SettingsController()),
-          // Set up audio.
-          ProxyProvider2<AppLifecycleStateNotifier, SettingsController,
-              AudioController>(
-            create: (context) => AudioController(),
-            update: (context, lifecycleNotifier, settings, audio) {
-              audio!.attachDependencies(lifecycleNotifier, settings);
-              return audio;
-            },
-            dispose: (context, audio) => audio.dispose(),
-            // Ensures that music starts immediately.
-            lazy: false,
+          ChangeNotifierProvider(
+            create: (context) => SettingsViewModel(
+              settingsService: ServiceLocator.get<SettingsService>(),
+            ),
           ),
+          // // Set up audio.
+          // ProxyProvider2<AppLifecycleStateNotifier, SettingsViewModel,
+          //     AudioController>(
+          //   create: (context) => AudioController(),
+          //   update: (context, lifecycleNotifier, settings, audio) {
+          //     audio!.attachDependencies(lifecycleNotifier, settings);
+          //     return audio;
+          //   },
+          //   dispose: (context, audio) => audio.dispose(),
+          //   // Ensures that music starts immediately.
+          //   lazy: false,
+          // ),
           Provider(create: (context) => Palette()),
           ChangeNotifierProvider(create: (context) => PlayerProgress()),
         ],

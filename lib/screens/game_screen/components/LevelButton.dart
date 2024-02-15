@@ -1,10 +1,4 @@
-import 'package:digitos/audio/audio_controller.dart';
-import 'package:digitos/audio/sounds.dart';
-import 'package:digitos/services/app_logger.dart';
-import 'package:digitos/view_models/game_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 class LevelConfigItem {
   final String name;
@@ -20,10 +14,10 @@ class LevelButton extends StatelessWidget {
   const LevelButton({
     super.key,
     required this.level,
+    required this.onPress,
   });
 
-  static final _log = AppLogger('LevelButton');
-
+  final void Function() onPress;
   final int level;
 
   static Map<int, LevelConfigItem> levelsDisplayConfig = {
@@ -35,21 +29,10 @@ class LevelButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final audioController = context.watch<AudioController>();
-    final gameViewModel = Provider.of<GameViewModel>(context);
-
     LevelConfigItem? levelConfig = levelsDisplayConfig[level];
 
     return InkWell(
-      onTap: () async {
-        _log.info('level $level selected');
-        audioController.playSfx(SfxType.buttonTap);
-
-        // todo think about this for performance... some kind of loading animation or something? when should it actually fetch the data, now or loading state on game screen?
-        gameViewModel.onPressLevelButton(difficulty: level).then((_) {
-          GoRouter.of(context).go('/game');
-        });
-      },
+      onTap: onPress,
       child: Column(
         children: [
           Text(

@@ -25,6 +25,8 @@ class AppLogger {
     });
 
     _isInitialized = true;
+
+    Logger('AppLogger').info('Logger initialized successfully');
   }
 
   static Future<void> _writeLog(String logMessage) async {

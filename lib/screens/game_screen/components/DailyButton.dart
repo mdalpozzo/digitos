@@ -1,28 +1,17 @@
-import 'package:digitos/audio/audio_controller.dart';
-import 'package:digitos/audio/sounds.dart';
-import 'package:digitos/view_models/game_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 class DailyButton extends StatelessWidget {
   const DailyButton({
     super.key,
+    required this.onPress,
   });
+
+  final void Function() onPress;
 
   @override
   Widget build(BuildContext context) {
-    final audioController = context.watch<AudioController>();
-    final gameViewModel = Provider.of<GameViewModel>(context);
-
     return InkWell(
-      onTap: () {
-        audioController.playSfx(SfxType.buttonTap);
-
-        gameViewModel.setPuzzleToDaily();
-
-        GoRouter.of(context).go('/game');
-      },
+      onTap: onPress,
       child: Column(
         children: [
           Container(

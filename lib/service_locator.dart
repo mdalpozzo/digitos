@@ -1,18 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digitos/services/account_service.dart';
+import 'package:digitos/services/audio_service.dart';
 import 'package:digitos/services/auth_service/auth_service.dart';
 import 'package:digitos/services/data_store/account_data_store.dart';
 import 'package:digitos/services/data_store/game_data_store.dart';
 import 'package:digitos/services/game_service.dart';
+import 'package:digitos/services/local_storage_service/local_storage_service.dart';
+import 'package:digitos/services/local_storage_service/shared_preferences_service.dart';
+import 'package:digitos/services/navigation_service.dart';
+import 'package:digitos/services/settings_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 class ServiceLocator {
   static final GetIt _getIt = GetIt.instance;
 
   static Future<void> loadServices({
     required FirebaseOptions firebaseOptions,
+    required GoRouter router,
   }) async {
     await Firebase.initializeApp(options: firebaseOptions);
 
@@ -37,6 +44,10 @@ class ServiceLocator {
     );
 
     // ===== SERVICES
+    // Register SharedPreferencesService as LocalStorageService
+    _getIt.registerLazySingleton<LocalStorageService>(
+      () => SharedPreferencesService(),
+    );
     _getIt.registerLazySingleton<AuthService>(
       () => AuthService(
         accountDataStore: _getIt<AccountDataStore>(),
@@ -55,6 +66,19 @@ class ServiceLocator {
         gameDataStore: _getIt<GameDataStore>(),
         authService: _getIt<AuthService>(),
       ),
+    );
+    _getIt.registerLazySingleton<SettingsService>(
+      () => SettingsService(
+        _getIt<LocalStorageService>(),
+      ),
+    );
+    _getIt.registerLazySingleton<AudioService>(
+      () => AudioService(
+        localStorageService: _getIt<LocalStorageService>(),
+      ),
+    );
+    _getIt.registerLazySingleton<NavigationService>(
+      () => NavigationService(router),
     );
   }
 

@@ -6,6 +6,8 @@ import 'package:digitos/services/app_logger.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
+// TODO - i like the idea of reviving this applifecycle observer, figure out how to use it redesign it
+
 typedef AppLifecycleStateNotifier = ValueNotifier<AppLifecycleState>;
 
 class AppLifecycleObserver extends StatefulWidget {

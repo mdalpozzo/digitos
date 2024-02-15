@@ -4,12 +4,13 @@
 
 import 'package:digitos/screens/game_screen/components/DailyButton.dart';
 import 'package:digitos/screens/game_screen/components/LevelButton.dart';
+import 'package:digitos/view_models/game_view_model.dart';
 import 'package:digitos/view_models/home_view_model.dart';
+import 'package:digitos/view_models/settings_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-import '../settings/settings.dart';
 import '../../style/palette.dart';
 import '../../style/responsive_screen.dart';
 
@@ -19,7 +20,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.watch<Palette>();
-    final settingsController = context.watch<SettingsController>();
+    final settingsController = context.watch<SettingsViewModel>();
+    final gameViewModel = context.watch<GameViewModel>();
 
     return Scaffold(
       backgroundColor: palette.backgroundMain,
@@ -151,16 +153,38 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: DailyButton(),
+                  child: DailyButton(
+                    onPress: gameViewModel.onPressDailyButton,
+                  ),
                 ),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: const [
-                      LevelButton(level: 1),
-                      LevelButton(level: 2),
-                      LevelButton(level: 3),
-                      LevelButton(level: 4),
+                    children: [
+                      LevelButton(
+                        level: 1,
+                        onPress: () {
+                          gameViewModel.onPressLevelButton(difficulty: 1);
+                        },
+                      ),
+                      LevelButton(
+                        level: 2,
+                        onPress: () {
+                          gameViewModel.onPressLevelButton(difficulty: 2);
+                        },
+                      ),
+                      LevelButton(
+                        level: 3,
+                        onPress: () {
+                          gameViewModel.onPressLevelButton(difficulty: 3);
+                        },
+                      ),
+                      LevelButton(
+                        level: 4,
+                        onPress: () {
+                          gameViewModel.onPressLevelButton(difficulty: 4);
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -176,8 +200,8 @@ class HomeScreen extends StatelessWidget {
                     iconSize: 50,
                     onPressed: () => GoRouter.of(context).push('/settings'),
                   ),
-                  ValueListenableBuilder<bool>(
-                    valueListenable: settingsController.audioOn,
+                  Selector<SettingsViewModel, bool>(
+                    selector: (_, viewModel) => viewModel.audioOn,
                     builder: (context, audioOn, child) {
                       return IconButton(
                         onPressed: () => settingsController.toggleAudioOn(),
