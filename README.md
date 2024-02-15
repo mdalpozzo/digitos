@@ -16,21 +16,25 @@ For example, you can run `flutter run -d macOS`, and get the same UI
 in a desktop window on a Mac. That way, you don't need to use a
 simulator/emulator or attach a mobile device.
 
-## Code organization
+## Code organization / architecture
 
-### MVVM
+Digitos is organized using an MVVM style architecture.
+
+### Models
+
+The model layer is responsible for creating representations of our data that fit the business logic and retrieving that remote data. This includes low level modelling like the Puzzle class which represents the data of a puzzle game.
+
+### Views
+
+Views are Flutter widgets/classes that deal only with the logic related to displaying/visualizing/presenting the Model data.
+
+### View Models
+
+Act as an coordinator between the Model/Service layers and the View. They expose controller like methods that the View may need such as storing game data or account data or fetching and providing data that will be presented.
 
 ### Services
 
 Services are classes which centralize some aspect of the app logic or functionality in one place. They should be singletons and are managed by the ServiceLocator class. See `service_locator.dart`.
-
-### View Models
-
-TODO
-
-### Controllers
-
-TODO
 
 ## Building for production
 
@@ -99,7 +103,7 @@ with their mouth.
 
 ## Logging
 
-An AppLogger class exists that abstracts [`logging`](https://pub.dev/packages/logging) package.  Logs are written to an app_logs.txt file.  Use as follows:
+An AppLogger class exists that abstracts [`logging`](https://pub.dev/packages/logging) package. Logs are written to an app_logs.txt file. Use as follows:
 
 ```dart
 import 'package:digitos/services/app_logger.dart';
