@@ -2,8 +2,10 @@ import 'dart:developer' as dev;
 
 import 'package:digitos/config_manager.dart';
 import 'package:digitos/service_locator.dart';
+import 'package:digitos/services/app_lifecycle_service.dart';
 import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/audio_service.dart';
+import 'package:digitos/services/local_storage_service/local_storage_service.dart';
 import 'package:digitos/services/navigation_service.dart';
 import 'package:digitos/view_models/game_view_model.dart';
 import 'package:digitos/view_models/home_view_model.dart';
@@ -80,6 +82,13 @@ class MyApp extends StatelessWidget {
     return AppLifecycleObserver(
       child: MultiProvider(
         providers: [
+          // TODO. i hate that this is an outlier service that needs to be initialized here instead of in ServiceLocator, but it relies on the flutter system to enable access to audio assets
+          ChangeNotifierProvider(
+            create: (context) => AudioService(
+              localStorageService: ServiceLocator.get<LocalStorageService>(),
+              appLifecycleService: ServiceLocator.get<AppLifecycleService>(),
+            ),
+          ),
           Provider<UserSessionManager>(
             create: (context) => UserSessionManager(
               authService: ServiceLocator.get<AuthService>(),
@@ -103,7 +112,7 @@ class MyApp extends StatelessWidget {
             create: (context) => GameViewModel(
               accountService: ServiceLocator.get<AccountService>(),
               gameService: ServiceLocator.get<GameService>(),
-              audioService: ServiceLocator.get<AudioService>(),
+              audioService: context.read<AudioService>(),
               navigationService: ServiceLocator.get<NavigationService>(),
             ),
           ),
@@ -112,18 +121,6 @@ class MyApp extends StatelessWidget {
               settingsService: ServiceLocator.get<SettingsService>(),
             ),
           ),
-          // // Set up audio.
-          // ProxyProvider2<AppLifecycleStateNotifier, SettingsViewModel,
-          //     AudioController>(
-          //   create: (context) => AudioController(),
-          //   update: (context, lifecycleNotifier, settings, audio) {
-          //     audio!.attachDependencies(lifecycleNotifier, settings);
-          //     return audio;
-          //   },
-          //   dispose: (context, audio) => audio.dispose(),
-          //   // Ensures that music starts immediately.
-          //   lazy: false,
-          // ),
           Provider(create: (context) => Palette()),
           ChangeNotifierProvider(create: (context) => PlayerProgress()),
         ],

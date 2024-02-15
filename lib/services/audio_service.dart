@@ -7,15 +7,17 @@ import 'package:digitos/audio/sounds.dart';
 import 'package:digitos/services/app_lifecycle_service.dart';
 import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/local_storage_service/local_storage_service.dart';
+import 'package:flutter/foundation.dart';
 
-class AudioService {
+class AudioService with ChangeNotifier {
   static final _log = AppLogger('AudioService');
 
   final AppLifecycleService _appLifecycleService;
 
   final AudioPlayer _musicPlayer = AudioPlayer(playerId: 'musicPlayer');
   final List<AudioPlayer> _sfxPlayers;
-  final Queue<Song> _playlist = Queue.of(List<Song>.of(songs)..shuffle());
+  // TODO is this the best way to handle the playlist? init as empty then load later?
+  Queue<Song> _playlist = Queue.from([]);
   int _currentSfxPlayer = 0;
   final Random _random = Random();
   final LocalStorageService _localStorageService;
@@ -46,13 +48,20 @@ class AudioService {
     _soundsOn = await _localStorageService.getBool('soundsOn') ?? false;
   }
 
+  Future<void> _preloadSfx() async {
+    _log.info('Preloading sfx');
+    final sfxFiles = SfxType.values.expand(soundTypeToFilename).toList();
+    await AudioCache(prefix: 'sfx/').loadAll(sfxFiles);
+    _playlist = Queue.of(List<Song>.of(songs)..shuffle());
+
+    _assetsLoaded = true;
+  }
+
   void onResume() {
     if (!_assetsLoaded) {
       _preloadSfx();
     }
   }
-
-
 
   void playSfx(SfxType type) {
     if (!_audioOn || !_soundsOn) return;
@@ -92,13 +101,6 @@ class AudioService {
     if (!_soundsOn) _sfxPlayers.forEach((player) => player.stop());
   }
 
-  Future<void> _preloadSfx() async {
-    _log.info('Preloading sfx');
-    final sfxFiles = SfxType.values.expand(soundTypeToFilename).toList();
-    await AudioCache(prefix: 'sfx/').loadAll(sfxFiles);
-    _assetsLoaded = true;
-  }
-
   void _handleSongFinished() {
     _log.info('Song finished');
     // Handle song completion
@@ -122,5 +124,6 @@ class AudioService {
   // Ensure to unregister the callbacks when the service is disposed
   void dispose() {
     _appLifecycleService.removeOnResumedCallback(_preloadSfx);
+    super.dispose();
   }
 }
