@@ -3,7 +3,7 @@ description: A game of numbers.
 
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"
-version: 0.0.9+9
+version: 0.0.10+10
 
 environment:
   sdk: ^3.0.0
