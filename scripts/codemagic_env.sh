@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Setting environment variables for Codemagic"
+
 # Write the NHOST_GRAPHQL_ENDPOINT to the .env file, overwriting existing content
 echo "NHOST_GRAPHQL_ENDPOINT=$NHOST_GRAPHQL_ENDPOINT" >> $FCI_BUILD_DIR/.env
 
