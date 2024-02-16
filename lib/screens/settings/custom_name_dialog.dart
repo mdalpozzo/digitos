@@ -1,29 +1,25 @@
-// Copyright 2022, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
-import 'package:digitos/services/account_service.dart';
+import 'package:digitos/view_models/settings_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-void showCustomNameDialog(BuildContext context) {
+void showDisplayNameDialog(BuildContext context) {
   showGeneralDialog(
       context: context,
       pageBuilder: (context, animation, secondaryAnimation) =>
-          CustomNameDialog(animation: animation));
+          DisplayNameDialog(animation: animation));
 }
 
-class CustomNameDialog extends StatefulWidget {
+class DisplayNameDialog extends StatefulWidget {
   final Animation<double> animation;
 
-  const CustomNameDialog({required this.animation, super.key});
+  const DisplayNameDialog({required this.animation, super.key});
 
   @override
-  State<CustomNameDialog> createState() => _CustomNameDialogState();
+  State<DisplayNameDialog> createState() => _DisplayNameDialogState();
 }
 
-class _CustomNameDialogState extends State<CustomNameDialog> {
+class _DisplayNameDialogState extends State<DisplayNameDialog> {
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -45,13 +41,13 @@ class _CustomNameDialogState extends State<CustomNameDialog> {
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.done,
             // onChanged: (value) {
-            //   context.read<AccountService>().updateUserName(value);
+            //   context.read<AccountService>().updateDisplayName(value);
             // },
             onSubmitted: (value) async {
-              // TODO handle error
+              // TODO handle error try/catch
 
               // Player tapped 'Submit'/'Done' on their keyboard.
-              await context.read<AccountService>().updateUserName(value);
+              await context.read<SettingsViewModel>().setDisplayName(value);
 
               if (mounted) {
                 Navigator.pop(context);
@@ -76,7 +72,6 @@ class _CustomNameDialogState extends State<CustomNameDialog> {
   @override
   void initState() {
     super.initState();
-    _controller.text =
-        context.read<AccountService>().currentGameData?.displayName ?? '';
+    _controller.text = context.read<SettingsViewModel>().displayName ?? '';
   }
 }

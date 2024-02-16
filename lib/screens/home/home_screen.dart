@@ -1,7 +1,3 @@
-// Copyright 2022, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:digitos/screens/game_screen/components/DailyButton.dart';
 import 'package:digitos/screens/game_screen/components/LevelButton.dart';
 import 'package:digitos/view_models/game_view_model.dart';

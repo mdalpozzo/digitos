@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class UpdateUserNameScreen extends StatefulWidget {
-  const UpdateUserNameScreen({super.key});
+class UpdateDisplayNameScreen extends StatefulWidget {
+  const UpdateDisplayNameScreen({super.key});
 
   @override
-  State<UpdateUserNameScreen> createState() => _UpdateUserNameScreenState();
+  State<UpdateDisplayNameScreen> createState() => _UpdateDisplayNameScreenState();
 }
 
-class _UpdateUserNameScreenState extends State<UpdateUserNameScreen> {
+class _UpdateDisplayNameScreenState extends State<UpdateDisplayNameScreen> {
   final _usernameController = TextEditingController();
   bool _isUpdating = false;
   String? _errorMessage;
@@ -46,7 +46,7 @@ class _UpdateUserNameScreenState extends State<UpdateUserNameScreen> {
 
                       try {
                         await accountService
-                            .updateUserName(_usernameController.text.trim());
+                            .updateDisplayName(_usernameController.text.trim());
 
                         if (mounted) {
                           GoRouter.of(context).pop();

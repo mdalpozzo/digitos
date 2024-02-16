@@ -1,6 +1,4 @@
 abstract class SettingsServiceInterface {
-  Future<String?> getDisplayName();
-  Future<void> setDisplayName(String name);
   Future<bool> getAudioOn();
   Future<void> setAudioOn(bool on);
   Stream<bool> get audioOnStream;

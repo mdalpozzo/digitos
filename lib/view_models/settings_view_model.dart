@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/audio_service.dart';
 import 'package:digitos/services/settings_service.dart';
 import 'package:digitos/view_models/base_view_model.dart';
@@ -7,6 +8,7 @@ import 'package:digitos/view_models/base_view_model.dart';
 class SettingsViewModel extends BaseViewModel {
   final SettingsService settingsService;
   final AudioService audioService;
+  final AccountService accountService;
 
   String? _displayName;
   bool _audioOn = false;
@@ -16,12 +18,20 @@ class SettingsViewModel extends BaseViewModel {
   late StreamSubscription<bool> _audioOnSubscription;
   late StreamSubscription<bool> _musicOnSubscription;
   late StreamSubscription<bool> _soundsOnSubscription;
+  late StreamSubscription<String?> _displayNameSubscription;
 
   SettingsViewModel({
     required this.settingsService,
     required this.audioService,
+    required this.accountService,
   }) : super() {
-    _loadSettings();
+    // todo maybe in future?
+    // _loadSettings();
+
+    _displayNameSubscription = accountService.displayName.listen((event) {
+      _displayName = event;
+      notifyListeners();
+    });
 
     // TODO can we group these values into a single audioSettings config object? and only update the changed vars to avoid multiple streams?
     _audioOnSubscription = settingsService.audioOnStream.listen((newState) {
@@ -44,19 +54,12 @@ class SettingsViewModel extends BaseViewModel {
   bool get musicOn => _musicOn;
   bool get soundsOn => _soundsOn;
 
-  // Internal method to load settings initially
-  Future<void> _loadSettings() async {
-    // TODO maybe see if this should be streamed
-    _displayName = await settingsService.getDisplayName();
-    notifyListeners();
-  }
-
   // Update methods that modify the settings and notify listeners
-  void setDisplayName(String? value) async {
+  Future<void> setDisplayName(String? value) async {
     if (value == null) {
       return; // Optionally handle null/empty values if necessary
     }
-    await settingsService.setDisplayName(value);
+    await accountService.updateDisplayName(value);
     _displayName = value;
     notifyListeners();
   }
@@ -83,6 +86,7 @@ class SettingsViewModel extends BaseViewModel {
     _audioOnSubscription.cancel();
     _musicOnSubscription.cancel();
     _soundsOnSubscription.cancel();
+    _displayNameSubscription.cancel();
 
     super.dispose();
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:digitos/services/account_service.dart';
 import 'package:digitos/services/app_logger.dart';
 import 'package:digitos/services/game_service.dart';
@@ -8,23 +10,26 @@ class HomeViewModel extends BaseViewModel {
   final GameService gameService;
   static final _log = AppLogger('HomeViewModel');
 
+  StreamSubscription? _bestScoreChangedSubscription;
+
   HomeViewModel({
     required this.accountService,
     required this.gameService,
   }) {
-    accountService.setDisplayNameChangedCallback((String newDisplayName) {
+    accountService.displayName.listen((String? newDisplayName) {
       _log.info('displayName changed to $newDisplayName');
       displayName = newDisplayName;
       notifyListeners();
     });
 
-    accountService.setBestScoreChangedCallback((int newBestScore) {
+    _bestScoreChangedSubscription =
+        accountService.bestScore.listen((int? newBestScore) {
       _log.info('bestScore changed to $newBestScore');
       bestScore = newBestScore;
       notifyListeners();
     });
 
-    accountService.setLoggedInCallback((bool newLoggedIn) {
+    accountService.loggedIn.listen((bool newLoggedIn) {
       _log.info('loggedIn changed to $newLoggedIn');
       loggedIn = newLoggedIn;
       notifyListeners();
@@ -34,4 +39,10 @@ class HomeViewModel extends BaseViewModel {
   bool loggedIn = false;
   String? displayName;
   int? bestScore;
+
+  @override
+  void dispose() {
+    _bestScoreChangedSubscription?.cancel();
+    super.dispose();
+  }
 }

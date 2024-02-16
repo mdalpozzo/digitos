@@ -31,7 +31,7 @@ class GameViewModel extends BaseViewModel {
     required this.audioService,
     required this.navigationService,
   }) {
-    accountService.setBestScoreChangedCallback((int newBestScore) {
+    accountService.bestScore.listen((int? newBestScore) {
       bestScore = newBestScore;
       notifyListeners();
     });
@@ -185,16 +185,44 @@ class GameViewModel extends BaseViewModel {
     _log.info('onPressLevelButton: $difficulty');
     gameService.selectedDifficulty = difficulty;
     audioService.playButtonTap();
-    await startNewGame();
+    // Navigate to loading screen first, without transitions
+    navigationService.navigateTo('/loading');
+
+    // Start fetching data and wait for at least 1 minute and 40 seconds before proceeding
+    await Future.wait([
+      startNewGame(),
+      Future.delayed(
+        Duration(
+          seconds: 1,
+          milliseconds: 650,
+        ),
+      ), // Ensure animation plays at least once
+    ]);
+
     navigationService.navigateTo('/game');
   }
 
 // todo think about this for performance... some kind of loading animation or something? when should it actually fetch the data, now or loading state on game screen?
   Future<void> onPressDailyButton({int? difficulty}) async {
     _log.info('onPressLevelButton: $difficulty');
-    setPuzzleToDaily();
     audioService.playButtonTap();
-    await startNewGame();
+
+    // Navigate to loading screen first, without transitions
+    navigationService.navigateTo('/loading');
+
+    setPuzzleToDaily();
+
+    // Start fetching data and wait for at least 1 minute and 40 seconds before proceeding
+    await Future.wait([
+      Future.delayed(
+        Duration(
+          seconds: 1,
+          milliseconds: 650,
+        ),
+      ), // Ensure animation plays at least once
+    ]);
+
+    // Then navigate to the game screen without transitions
     navigationService.navigateTo('/game');
   }
 
