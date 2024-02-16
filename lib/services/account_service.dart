@@ -25,12 +25,19 @@ class AccountService {
 
     // Set up a listener for user authentication changes
     _authSubscription = authService.onAuthChanges.listen((user) {
+      var _user = user;
+      if (_user != null && _user.email != null) {
+        updateLoggedIn(true);
+      }
+
       // TODO probably need to consider the impact on the UX/UI or app logic given the async nature of this operation
       loadAccountGameData();
       // Additional actions if needed
+      _updateDisplayName(user?.displayName);
     });
   }
 
+  // todo see if you can get rid of this so we have less state to manage
   GameData? _currentGameData;
 
   Future<void> createNewAccountInDB(String userId,
@@ -141,10 +148,11 @@ class AccountService {
     // OR
     // return updated game data from accountDataStore.updateGameData and update local app state
     await loadAccountGameData();
+    _updateBestScore(_currentGameData?.best);
   }
 
-  Future<void> updateUserName(String newName) async {
-    _log.info('AccountService.updateUserName');
+  Future<void> updateDisplayName(String newName) async {
+    _log.info('AccountService.updateDisplayName');
     String? userId = authService.currentUser?.uid;
     // TODO enforce display name uniqueness
 
@@ -163,41 +171,33 @@ class AccountService {
     _currentGameData?.displayName = newName;
   }
 
-// these seem to granular... do i really need each separate value to have its own callback?
-  Function(int)? onBestScoreChanged;
+  // todo these seem too granular... do i really need each separate value to have its own callback?
+  final _bestScoreController = StreamController<int?>.broadcast();
 
-  void setBestScoreChangedCallback(Function(int) callback) {
-    onBestScoreChanged = callback;
+  Stream<int?> get bestScore => _bestScoreController.stream;
+
+  void _updateBestScore(int? newBestScore) {
+    _bestScoreController.add(newBestScore);
   }
 
-  void updateBestScore(int newBestScore) {
-    var callback = onBestScoreChanged;
-    if (callback != null) callback(newBestScore);
+  final _displayNameController = StreamController<String?>.broadcast();
+
+  Stream<String?> get displayName => _displayNameController.stream;
+
+  void _updateDisplayName(String? newDisplayName) {
+    _displayNameController.add(newDisplayName);
   }
 
-  Function(String)? onDisplayNameChanged;
+  final _loggedInController = StreamController<bool>.broadcast();
 
-  void setDisplayNameChangedCallback(Function(String) callback) {
-    onDisplayNameChanged = callback;
-  }
-
-  void updateDisplayName(String newDisplayName) {
-    var callback = onDisplayNameChanged;
-    if (callback != null) callback(newDisplayName);
-  }
-
-  Function(bool)? onLoggedInChanged;
-
-  void setLoggedInCallback(Function(bool) callback) {
-    onLoggedInChanged = callback;
-  }
+  Stream<bool> get loggedIn => _loggedInController.stream;
 
   void updateLoggedIn(bool newLoggedIn) {
-    var callback = onLoggedInChanged;
-    if (callback != null) callback(newLoggedIn);
+    _loggedInController.add(newLoggedIn);
   }
 
   void dispose() {
     _authSubscription.cancel();
+    _bestScoreController.close();
   }
 }

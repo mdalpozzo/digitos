@@ -113,6 +113,7 @@ class MyApp extends StatelessWidget {
             create: (context) => SettingsViewModel(
               settingsService: ServiceLocator.get<SettingsService>(),
               audioService: ServiceLocator.get<AudioService>(),
+              accountService: ServiceLocator.get<AccountService>(),
             ),
           ),
           Provider(create: (context) => Palette()),

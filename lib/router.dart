@@ -38,7 +38,7 @@ final router = GoRouter(
         GoRoute(
           path: 'register',
           builder: (context, state) =>
-              const UpdateUserNameScreen(key: Key('updateUserName')),
+              const UpdateDisplayNameScreen(key: Key('updateDisplayName')),
         ),
       ],
     ),

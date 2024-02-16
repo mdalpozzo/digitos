@@ -31,7 +31,7 @@ class GameViewModel extends BaseViewModel {
     required this.audioService,
     required this.navigationService,
   }) {
-    accountService.setBestScoreChangedCallback((int newBestScore) {
+    accountService.bestScore.listen((int? newBestScore) {
       bestScore = newBestScore;
       notifyListeners();
     });

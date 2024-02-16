@@ -105,7 +105,7 @@ class _NameChangeLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkResponse(
       highlightShape: BoxShape.rectangle,
-      onTap: () => showCustomNameDialog(context),
+      onTap: () => showDisplayNameDialog(context),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Row(

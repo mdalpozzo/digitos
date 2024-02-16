@@ -23,14 +23,6 @@ class SettingsService implements SettingsServiceInterface {
     });
   }
 
-  Future<String?> getDisplayName() async {
-    return await _localStorageService.getString('displayName');
-  }
-
-  Future<void> setDisplayName(String name) async {
-    await _localStorageService.setString('displayName', name);
-    _log.info('Display name set to $name');
-  }
 
   Stream<bool> get audioOnStream => _audioOnController.stream;
 
