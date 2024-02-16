@@ -26,8 +26,6 @@ class AudioService with ChangeNotifier {
   final Random _random = Random();
   final SettingsServiceInterface _settingsService;
 
-  bool _assetsLoaded = false;
-
   bool _audioOn = true;
   bool _musicOn = true;
   bool _soundsOn = true;
@@ -39,29 +37,34 @@ class AudioService with ChangeNotifier {
   })  : _settingsService = settingsService,
         _appLifecycleService = appLifecycleService,
         _sfxPlayers = List.generate(polyphony, (_) => AudioPlayer()).toList() {
-    appLifecycleService.addOnResumedCallback(_preloadSfx);
+    appLifecycleService.addOnResumedCallback(onResume);
     _musicPlayer.onPlayerComplete.listen((_) => _handleSongFinished());
     _audioOnSubscription = _settingsService.audioOnStream.listen(_setAudioOn);
     _musicOnSubscription = _settingsService.musicOnStream.listen(_setMusicOn);
     _soundsOnSubscription =
         _settingsService.soundsOnStream.listen(_setSoundsOn);
+
+    _preloadSfx();
   }
 
   Future<void> _preloadSfx() async {
     _log.info('Preloading sfx');
-    final sfxFiles = SfxType.values.expand(soundTypeToFilename).toList();
-    await AudioCache(prefix: 'sfx/').loadAll(sfxFiles);
+    // This assumes there is only a limited number of sound effects in the game.
+    // If there are hundreds of long sound effect files, it's better
+    // to be more selective when preloading.
+    await AudioCache.instance.loadAll(
+      SfxType.values
+          .expand(soundTypeToFilename)
+          .map((path) => 'sfx/$path')
+          .toList(),
+    );
 
     _playlist = Queue.of(List<Song>.of(songs)..shuffle());
     _playCurrentSongInPlaylist();
-
-    _assetsLoaded = true;
   }
 
   void onResume() {
-    if (!_assetsLoaded) {
-      _preloadSfx();
-    }
+    // add on resume logic here
   }
 
   void playSfx(SfxType type) {
@@ -130,7 +133,7 @@ class AudioService with ChangeNotifier {
   // Ensure to unregister the callbacks when the service is disposed
   @override
   void dispose() {
-    _appLifecycleService.removeOnResumedCallback(_preloadSfx);
+    _appLifecycleService.removeOnResumedCallback(onResume);
     _audioOnSubscription.cancel();
     _musicOnSubscription.cancel();
     _soundsOnSubscription.cancel();
