@@ -84,7 +84,12 @@ class AudioService with ChangeNotifier {
   Future<void> _setAudioOn(bool on) async {
     _log.info('Toggling audio $on');
     _audioOn = on;
-    if (!on) _stopAllSound();
+    if (!on) {
+      _stopAllSound();
+    } else {
+      _startAllSound();
+    }
+    ;
   }
 
   Future<void> _setMusicOn(bool on) async {
@@ -128,6 +133,11 @@ class AudioService with ChangeNotifier {
     _log.info('Stopping all sound');
     _musicPlayer.stop();
     _sfxPlayers.forEach((player) => player.stop());
+  }
+
+  void _startAllSound() {
+    _log.info('Starting all sound');
+    if (_musicOn) _playCurrentSongInPlaylist();
   }
 
   // Ensure to unregister the callbacks when the service is disposed
